@@ -1,8 +1,8 @@
 <?php
-$host = "localhost";  // Cambia si es necesario
-$dbname = "cafeteria";
-$username = "root";  // Usuario de la base de datos
-$password = "";  // Contraseña de la base de datos
+$host = getenv('DB_HOST') ?: "localhost";
+$dbname = getenv('DB_NAME') ?: "cafeteria";
+$username = getenv('DB_USER') ?: "root";
+$password = getenv('DB_PASSWORD') ?: "";
 
 try {
     $pdo = new PDO("mysql:host=$host;dbname=$dbname;charset=utf8", $username, $password);

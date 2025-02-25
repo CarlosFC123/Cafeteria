@@ -1196,36 +1196,15 @@ $(document).ready(function() {
             $('#modalAlmuerzoPriceMedia').text(`Media: ${productCard.find('.price-list .price:eq(1)').text()}`);
             $('#modalAlmuerzoPriceOrden').text(`Orden: ${productCard.find('.price-list .price:eq(2)').text()}`);
             $('#modalAlmuerzoDescription').text(productDescription);
-            $('#modalAlmuerzoCantidadPorcion').text(`Porción: ${productQuantityPorcion} disponibles`);
-            $('#modalAlmuerzoCantidadMedia').text(`Media: ${productQuantityMedia} disponibles`);
-            $('#modalAlmuerzoCantidadOrden').text(`Orden: ${productQuantityOrden} disponibles`);
+            $('#modalAlmuerzoCantidadPorcion').text(`${productQuantityPorcion} disponibles`);
+            $('#modalAlmuerzoCantidadMedia').text(`${productQuantityMedia} disponibles`);
+            $('#modalAlmuerzoCantidadOrden').text(`${productQuantityOrden} disponibles`);
             $('#modalAlmuerzoEstadoInventario').text((productQuantityPorcion > 0 || productQuantityMedia > 0 || productQuantityOrden > 0) ? 'Disponible' : 'Agotado');
             $('#almuerzoModal').fadeIn(300);
             
             // Inicializar formulario de almuerzos
             inicializarFormularioAlmuerzo();
-        } else if ($(this).closest('.card-product').parent().attr('id') === 'container-breakfasts') {
-            // Lógica para desayunos
-            const productQuantity = productCard.data('quantity');
-            const productPrice = productCard.find('.price').text().replace('$', ''); // Obtener el precio del desayuno
-
-            $('#modalDesayunoName').text(productName);
-            $('#modalDesayunoImage').attr('src', productImage);
-            $('#modalDesayunoDescription').text(productDescription);
-            $('#modalDesayunoQuantity').text(`Cantidad: ${productQuantity}`);
-            $('#modalDesayunoPrice').text(`$${productPrice}`); // Mostrar el precio en el modal
-
-            // Calcular el total en tiempo real
-            $('#cantidadDesayuno').on('input', function() {
-                const cantidad = parseFloat($(this).val());
-                const precio = parseFloat(productPrice);
-                const total = cantidad * precio;
-                $('#totalCalculadoDesayuno').text(`Total: $${total.toFixed(2)}`);
-            });
-
-            // Mostrar el modal de desayunos
-            $('#desayunoModal').fadeIn(300);
-        } else {
+        }  else {
             // Lógica para productos
             const productQuantity = productCard.data('quantity');
             const productPrice = productCard.find('.price').text().replace('$', ''); // Obtener el precio del producto
@@ -1248,6 +1227,29 @@ $(document).ready(function() {
             $('#productModal').fadeIn(300);
         }
     });
+
+    if ($(this).closest('.card-product').parent().attr('id') === 'container-breakfasts') {
+            // Lógica para desayunos
+            const productQuantity = productCard.data('quantity');
+            const productPrice = productCard.find('.price').text().replace('$', ''); // Obtener el precio del desayuno
+
+            $('#modalDesayunoName').text(productName);
+            $('#modalDesayunoImage').attr('src', productImage);
+            $('#modalDesayunoDescription').text(productDescription);
+            $('#modalDesayunoQuantity').text(`Cantidad: ${productQuantity}`);
+            $('#modalDesayunoPrice').text(`$${productPrice}`); // Mostrar el precio en el modal
+
+            // Calcular el total en tiempo real
+            $('#cantidadDesayuno').on('input', function() {
+                const cantidad = parseFloat($(this).val());
+                const precio = parseFloat(productPrice);
+                const total = cantidad * precio;
+                $('#totalCalculadoDesayuno').text(`Total: $${total.toFixed(2)}`);
+            });
+
+            // Mostrar el modal de desayunos
+            $('#desayunoModal').fadeIn(300);
+        }
 
     // Cerrar modales
     $('.close-modal, .modal').on('click', function(event) {
@@ -1368,7 +1370,7 @@ $(document).ready(function() {
                                     <h3>${almuerzo.nombreProducto}</h3>
                                     <div class="price-container">
                                         <div class="price-list">
-                                            <p class="price">Porciónn: $${almuerzo.precioPorcion}</p>
+                                            <p class="price">Porción: $${almuerzo.precioPorcion}</p>
                                             <p class="price">Media: $${almuerzo.precioMedia}</p>
                                             <p class="price">Orden: $${almuerzo.precioOrden}</p>
                                         </div>
