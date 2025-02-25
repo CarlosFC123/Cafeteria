@@ -1368,7 +1368,7 @@ $(document).ready(function() {
                                     <h3>${almuerzo.nombreProducto}</h3>
                                     <div class="price-container">
                                         <div class="price-list">
-                                            <p class="price">Porción: $${almuerzo.precioPorcion}</p>
+                                            <p class="price">Porciónn: $${almuerzo.precioPorcion}</p>
                                             <p class="price">Media: $${almuerzo.precioMedia}</p>
                                             <p class="price">Orden: $${almuerzo.precioOrden}</p>
                                         </div>
