@@ -220,7 +220,6 @@ $mensaje_bienvenida = "Bienvenido Administrador"; // Este mensaje puede ser din√
         <?php } ?>
 
         <a href="menu.php">Inicio</a>
-        <a href="ventas.php">Ventas</a>
         <a href="admin_dashboard.php">Usuarios</a>
         <a href="ordenes.php">Ordenes</a>
         <a href="#" class="submenu-toggle" onclick="toggleSubmenu(event)">Productos</a>
