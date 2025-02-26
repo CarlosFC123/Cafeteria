@@ -1192,9 +1192,9 @@ $(document).ready(function() {
 
             $('#modalAlmuerzoName').text(productName);
             $('#modalAlmuerzoImage').attr('src', productImage);
-            $('#modalAlmuerzoPricePorcion').text(`Porción: ${productCard.find('.price-list .price:eq(0)').text()}`);
-            $('#modalAlmuerzoPriceMedia').text(`Media: ${productCard.find('.price-list .price:eq(1)').text()}`);
-            $('#modalAlmuerzoPriceOrden').text(`Orden: ${productCard.find('.price-list .price:eq(2)').text()}`);
+            $('#modalAlmuerzoPricePorcion').text(`${productCard.find('.price-list .price:eq(0)').text()}`);
+            $('#modalAlmuerzoPriceMedia').text(`${productCard.find('.price-list .price:eq(1)').text()}`);
+            $('#modalAlmuerzoPriceOrden').text(`${productCard.find('.price-list .price:eq(2)').text()}`);
             $('#modalAlmuerzoDescription').text(productDescription);
             $('#modalAlmuerzoCantidadPorcion').text(`${productQuantityPorcion} disponibles`);
             $('#modalAlmuerzoCantidadMedia').text(`${productQuantityMedia} disponibles`);
