@@ -1,7 +1,5 @@
 <?php
-// guardar_preventa.php
-
-// Conexión a la base de datos
+// guardar_preventa_desayuno.php
 $servername = "localhost";
 $username = "root";
 $password = "";
@@ -20,35 +18,16 @@ $cantidad_orden = $_POST['cantidad_orden'];
 $precioUnitarioPreventa = $_POST['precioUnitarioPreventa'];
 $precioTotalPreventa = $_POST['precioTotalPreventa'];
 $metodoPago = $_POST['metodoPago'];
-$tipoComida = $_POST['tipoComida']; // porcion, media, orden
 
 // Insertar los datos en la tabla preventa
 $sqlInsert = "INSERT INTO preventa (nombrePreventa, cantidad_orden, precioUnitarioPreventa, precioTotalPreventa, metodoPago)
               VALUES ('$nombrePreventa', $cantidad_orden, $precioUnitarioPreventa, $precioTotalPreventa, '$metodoPago')";
 
 if ($conn->query($sqlInsert) === TRUE) {
-    // Determinar qué columna restar según el tipo de comida
-    $columnaRestar = '';
-    switch ($tipoComida) {
-        case 'porcion':
-            $columnaRestar = 'cantidadPorcion';
-            break;
-        case 'media':
-            $columnaRestar = 'cantidadMedia';
-            break;
-        case 'orden':
-            $columnaRestar = 'cantidadOrden';
-            break;
-        default:
-            die("Tipo de comida no válido.");
-    }
-
-    
-
-    // Actualizar la cantidad disponible en la tabla almuerzo
-    $sqlUpdate = "UPDATE almuerzo 
-                  SET $columnaRestar = $columnaRestar - $cantidad_orden 
-                  WHERE nombreProducto = '$nombrePreventa'"; // Usar nombreProducto en lugar de nombreAlmuerzo
+    // Actualizar la cantidad disponible en la tabla desayuno
+    $sqlUpdate = "UPDATE desayuno 
+                  SET cantidadDesayuno = cantidadDesayuno - $cantidad_orden 
+                  WHERE nombreProducto = '$nombrePreventa'";
 
     if ($conn->query($sqlUpdate) === TRUE) {
         echo "Compra guardada y cantidad actualizada con éxito";

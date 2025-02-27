@@ -1,0 +1,19 @@
+Array
+(
+    [nombrePagos] => Hotcakes
+    [canTotalP] => 15
+    [fePago] => 2025-02-26 16:04:30
+    [metodoPago] => transferencia
+    [cantidad_orden] => 1
+)
+2025-02-26 17:05:25 - DATOS RECIBIDOS: Array
+(
+    [nombrePagos] => Hotcakes
+    [canTotalP] => 15
+    [fePago] => 2025-02-26 16:05:22
+    [metodoPago] => transferencia
+    [cantidad_orden] => 1
+)
+
+2025-02-26 17:05:25 - DATOS PROCESADOS: Nombre=Hotcakes, Total=15, Cantidad=1
+2025-02-26 17:05:25 - PAGO INSERTADO CORRECTAMENTE

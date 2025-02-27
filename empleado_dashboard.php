@@ -96,6 +96,8 @@ $almuerzos = $pdo->query("
     <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" rel="stylesheet">
 	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+
     <style>
         .modal-content {
             background-color: #fff;
@@ -402,6 +404,57 @@ $almuerzos = $pdo->query("
     color: #000;
     text-decoration: none;
 }
+
+
+/* Estilo normal para pantallas grandes */
+.cart-button {
+  display: flex;
+  align-items: center;
+  background-color:rgb(255, 255, 255);
+  color: black;
+  border: none;
+  border-radius: 30px;
+  padding: 10px 20px;
+  cursor: pointer;
+  transition: background-color 0.3s, transform 0.2s;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+  margin-left: auto;
+}
+
+.cart-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+}
+
+.cart-icon {
+  font-size: 1.5rem;
+  margin-right: 10px;
+  position: relative;
+}
+
+.cart-text {
+  font-weight: 600;
+  font-size: 1rem;
+}
+
+
+
+/* Media query para dispositivos móviles */
+@media screen and (max-width: 768px) {
+  .cart-button {
+    background-color: transparent; /* Elimina el fondo azul */
+    box-shadow: none; /* Elimina la sombra */
+    padding: 0; /* Elimina el padding */
+  }
+  
+  .cart-text {
+    display: none; /* Oculta el texto "Carrito" */
+  }
+  
+
+  
+
+}
     </style>
 </head>
 <body>
@@ -431,10 +484,13 @@ $almuerzos = $pdo->query("
                             <a href="logout.php">Cerrar sesión</a>
                         </div>
                     </div>
-                    <i class="fa-solid fa-basket-shopping"></i>
-                    <div class="content-shopping-cart">
-                        <span class="text">Carrito</span>
+                    <button class="cart-button">
+                    <div class="cart-icon">
+                        <span class="material-icons" style="font-size: 30px; color: #C7A17A;">shopping_cart</span>
+                        
                     </div>
+                    <span class="cart-text">Carrito</span>
+                    </button>
                 </div>
             </div>
         </div>
@@ -445,6 +501,12 @@ $almuerzos = $pdo->query("
                     <li><a href="#">Inicio</a></li>
                     <li><a id="menu-semanal-btn">Menú semanal</a></li>
                 </ul>
+                <!-- <form class="search-form">
+                    <input type="search" id="searchInput" placeholder="Buscar..." oninput="filtrarProductos()" />
+                    <button type="button" class="btn-search" id="btn-search">
+                        <i class="fa-solid fa-magnifying-glass"></i>
+                    </button>
+                </form> -->
             </nav>
         </div>
         <div id="menu-semanal-modal" class="modal fade" tabindex="-1" role="dialog" aria-hidden="true">
@@ -516,7 +578,7 @@ $almuerzos = $pdo->query("
                     </div>
                     <div class="content-card-product">
                         <h3><?php echo htmlspecialchars($producto['nbProducto']); ?></h3>
-                        <span class="add-cart">
+                        <span class="add-cart" data-type="producto">
                             <i class="fa-solid fa-basket-shopping"></i>
                         </span>
                         <p class="price">$<?php echo number_format($producto['precioProducto'], 2); ?></p>
@@ -533,6 +595,7 @@ $almuerzos = $pdo->query("
                         data-description="<?php echo htmlspecialchars($desayuno['descripcionDesayuno']); ?>"
                         data-category="Desayuno"
                         data-cantidad="<?php echo htmlspecialchars($desayuno['cantidadDesayuno']); ?>">
+                        
                         <div class="container-img">
                             <img src="uploads/<?php echo htmlspecialchars($desayuno['imgDesayuno']); ?>" alt="<?php echo htmlspecialchars($desayuno['nombreProducto']); ?>" />
                         </div>
@@ -542,9 +605,9 @@ $almuerzos = $pdo->query("
                                 <div class="price-list">
                                     <p class="price">$<?php echo number_format($desayuno['precioDesayuno'], 2); ?></p>
                                 </div>
-                                <div class="add-cart">
+                                <span class="add-cart" data-type="desayuno">
                                     <i class="fa-solid fa-basket-shopping"></i>
-                                </div>
+                                </span>
                             </div>
                         </div>
                     </div>
@@ -573,9 +636,9 @@ $almuerzos = $pdo->query("
                                 <p class="price">Media: $<?php echo number_format($alm['precioMedia'], 2); ?></p>
                                 <p class="price">Orden: $<?php echo number_format($alm['precioOrden'], 2); ?></p>
                             </div>
-                            <div class="add-cart">
+                            <span class="add-cart" data-type="almuerzo">
                                 <i class="fa-solid fa-basket-shopping"></i>
-                            </div>
+                            </span>
                         </div>
                     </div>
                 </div>
@@ -590,79 +653,211 @@ $almuerzos = $pdo->query("
             <img src="img/5.jpeg" alt="Gallery Img5" class="gallery-img-5" />
         </section>
     </main>
-    <!-- <section class="container specials">
-            <h1 class="heading-2">Especiales</h1>
-            <div class="container-products">
-                
-            <div>
-    </section>                                -->
-    <!--Modal de Producto CODIGO CORRECTOO-->                           
-    <div id="productModal" class="modal">
-        <div class="modal-content">
-            <span class="close-modal">&times;</span>
-            <div class="row">
-                <div class="col-md-5">
-                    <img id="modalProductImage" src="" alt="Product Image" class="img-fluid rounded shadow">
-                </div>
-                <div class="col-md-7">
-                    <h2 id="modalProductName" class="mb-3 fw-bold"></h2>
-                    <div class="product-info">
-                        <div class="info-item">
-                            <span class="info-label">Categoría:</span>
-                            <span id="modalProductCategory" class="badge bg-primary"></span>
-                        </div>
-                        <div class="info-item mt-2">
-                            <span class="info-label">Tipo:</span>
-                            <span id="modalProductType" class="badge bg-secondary"></span>
-                        </div>
-                        <div class="info-item mt-3">
-                            <h4 id="modalProductPrice" class="text-success fw-bold"></h4>
-                        </div>
-                        <div class="info-item mt-3">
-                            <h5>Descripción:</h5>
-                            <p id="modalProductDescription" class="text-muted"></p>
-                        </div>
-                        <div class="info-item mt-3">
-                            <h5>Cantidad en inventario:</h5>
-                            <p id="modalProductQuantity" class="text-muted"></p>
-                        </div>
-                        <div class="info-item mt-3">
-                            <h5>Estado del inventario:</h5>
-                            <p id="modalProductStatus" class="text-muted"></p>
-                        </div>
-                        <!-- Formulario de cantidad y forma de pago -->
-                        <form id="formProducto" class="mt-3">
-                            <div class="form-group">
+                              
+   <!-- Modal de Productos -->
+<div id="productModal" class="modal">
+    <div class="modal-content">
+        <span class="close-modal">&times;</span>
+        <div class="row">
+            <div class="col-md-5">
+                <img id="modalProductImage" src="" alt="Product Image" class="img-fluid rounded shadow">
+            </div>
+            <div class="col-md-7">
+                <h2 id="modalProductName" class="mb-3 fw-bold"></h2>
+                <div class="product-info">
+                    <div class="info-item">
+                        <span class="info-label">Categoría:</span>
+                        <span id="modalProductCategory" class="badge bg-primary"></span>
+                    </div>
+                    <div class="info-item mt-2">
+                        <span class="info-label">Tipo:</span>
+                        <span id="modalProductType" class="badge bg-secondary"></span>
+                    </div>
+                    <div class="info-item mt-3">
+                        <h4 id="modalProductPrice" class="text-success fw-bold"></h4>
+                    </div>
+                    <div class="info-item mt-3">
+                        <h5>Descripción:</h5>
+                        <p id="modalProductDescription" class="text-muted"></p>
+                    </div>
+                    <div class="info-item mt-3">
+                        <h5>Cantidad en inventario:</h5>
+                        <p id="modalProductQuantity" class="text-muted"></p>
+                    </div>
+                    <div class="info-item mt-3">
+                        <h5>Estado del inventario:</h5>
+                        <p id="modalProductStatus" class="text-muted"></p>
+                    </div>
+                    <!-- Formulario de cantidad y forma de pago -->
+                    <form id="formProducto" class="mt-3">
+                        <div class="form-group">
                             <h5 style="color: #2a9d8f; font-size: 1.1rem;">Cantidad:</h5>
                             <input type="number" id="cantidadProducto" name="cantidadProducto" class="form-control" min="1" required>
-                            </div>
-                            <div class="form-group mt-3">
+                        </div>
+                        <div class="form-group mt-3">
                             <h5 style="color: #2a9d8f; font-size: 1.1rem;">Método de Pago:</h5>
                             <div>
                                 <label>
-                                <input type="radio" id="formaPagoEfectivoProducto" name="formaPagoProducto" value="efectivo" required>
-                                Efectivo
+                                    <input type="radio" id="formaPagoEfectivoProducto" name="formaPagoProducto" value="efectivo" required>
+                                    Efectivo
                                 </label>
                             </div>
                             <div>
                                 <label>
-                                <input type="radio" id="formaPagoTransferenciaProducto" name="formaPagoProducto" value="transferencia" required>
-                                Transferencia
+                                    <input type="radio" id="formaPagoTransferenciaProducto" name="formaPagoProducto" value="transferencia" required>
+                                    Transferencia
                                 </label>
                             </div>
-                            </div>
-                            <!-- Total a pagar antes del botón -->
-                            <div id="totalCalculadoProducto" class="mt-3" style="font-size: 1.2rem; color: #264653; font-weight: bold;"></div>
-
-                            <button type="submit" id="btnAccionProducto" class="btn btn-primary w-100" style="background-color: #2a9d8f; border: none; border-radius: 10px; padding: 1rem;">
+                        </div>
+                        <!-- Total a pagar antes del botón -->
+                        <div id="totalCalculadoProducto" class="mt-3" style="font-size: 1.2rem; color: #264653; font-weight: bold;"></div>
+                        <button type="submit" id="btnAccionProducto" class="btn btn-primary w-100" style="background-color: #2a9d8f; border: none; border-radius: 10px; padding: 1rem;">
                             Solicitar
-                            </button>
-                        </form>
-                    </div>
+                        </button>
+                    </form>
                 </div>
             </div>
         </div>
     </div>
+</div>
+
+<!-- Modal de Desayunos -->
+<div id="desayunoModal" class="modal">
+    <div class="modal-content">
+        <span class="close-modal">&times;</span>
+        <div class="row">
+            <div class="col-md-5">
+                <img id="modalDesayunoImage" src="" alt="Desayuno Image" class="img-fluid rounded shadow">
+            </div>
+            <div class="col-md-7">
+                <h2 id="modalDesayunoName" class="mb-3 fw-bold" style="color: #264653; font-size: 2rem;"></h2>
+                <div class="product-info">
+                    <!-- Precio -->
+                    <div class="info-item mt-3">
+                        <h5 style="color: #2a9d8f; font-size: 1.1rem;">Precio:</h5>
+                        <p id="modalDesayunoPrice" class="text-muted" style="font-size: 1rem;"></p>
+                    </div>
+                    <!-- Descripción -->
+                    <div class="info-item mt-3">
+                        <h5 style="color: #2a9d8f; font-size: 1.1rem;">Descripción:</h5>
+                        <p id="modalDesayunoDescription" class="text-muted" style="font-size: 1rem;"></p>
+                    </div>
+                    <!-- Cantidad Disponible -->
+                    <div class="info-item mt-3">
+                        <h5 style="color: #2a9d8f; font-size: 1.1rem;">Cantidad Disponible:</h5>
+                        <p id="modalDesayunoQuantity" class="text-muted" style="font-size: 1rem;"></p>
+                    </div>
+                    <!-- Formulario -->
+                    <form id="formDesayuno" class="mt-3">
+                        <!-- Cantidad a comprar -->
+                        <div class="form-group">
+                            <h5 style="color: #2a9d8f; font-size: 1.1rem;">Cantidad:</h5>
+                            <input type="number" id="cantidadDesayuno" name="cantidadDesayuno" class="form-control" min="1" required>
+                        </div>
+                        <!-- Método de pago -->
+                        <div class="form-group mt-3">
+                            <h5 style="color: #2a9d8f; font-size: 1.1rem;">Método de Pago:</h5>
+                            <div>
+                                <label>
+                                    <input type="radio" id="formaPagoEfectivoDesayuno" name="formaPagoDesayuno" value="efectivo" required>
+                                    Efectivo
+                                </label>
+                            </div>
+                            <div>
+                                <label>
+                                    <input type="radio" id="formaPagoTransferenciaDesayuno" name="formaPagoDesayuno" value="transferencia" required>
+                                    Transferencia
+                                </label>
+                            </div>
+                        </div>
+                        <!-- Aquí aparece el total ANTES del botón -->
+                        <div id="totalCalculadoDesayuno" class="mt-3" style="font-size: 1.2rem; color: #264653; font-weight: bold;"></div>
+                        <!-- Botón -->
+                        <button type="submit" id="btnAccionDesayuno" class="btn btn-primary w-100" style="background-color: #2a9d8f; border: none; border-radius: 10px; padding: 1rem;">
+                            Solicitar
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal de Almuerzos -->
+<div id="almuerzoModal" class="modal">
+    <div class="modal-content">
+        <span class="close-modal">&times;</span>
+        <div class="row">
+            <div class="col-md-5">
+                <img id="modalAlmuerzoImage" src="" alt="Almuerzo Image" class="img-fluid rounded shadow">
+            </div>
+            <div class="col-md-7">
+                <h2 id="modalAlmuerzoName" class="mb-3 fw-bold" style="color: #264653; font-size: 2rem; border-bottom: 2px solid #2a9d8f; padding-bottom: 0.5rem;"></h2>
+                <div class="product-info">
+                    <!-- Precios -->
+                    <div class="info-item mt-3">
+                        <h5 style="color: #2a9d8f; font-size: 1.1rem; margin-bottom: 0.5rem;">Precios:</h5>
+                        <p id="modalAlmuerzoPricePorcion" class="text-muted" style="font-size: 1rem; color: #6c757d; margin-bottom: 0;"></p>
+                        <p id="modalAlmuerzoPriceMedia" class="text-muted" style="font-size: 1rem; color: #6c757d; margin-bottom: 0;"></p>
+                        <p id="modalAlmuerzoPriceOrden" class="text-muted" style="font-size: 1rem; color: #6c757d; margin-bottom: 0;"></p>
+                    </div>
+                    <!-- Descripción -->
+                    <div class="info-item mt-3">
+                        <h5 style="color: #2a9d8f; font-size: 1.1rem; margin-bottom: 0.5rem;">Descripción:</h5>
+                        <p id="modalAlmuerzoDescription" class="text-muted" style="font-size: 1rem; color: #6c757d; margin-bottom: 0;"></p>
+                    </div>
+                    <!-- Cantidades Disponibles -->
+                    <div class="info-item mt-3">
+                        <h5 style="color: #2a9d8f; font-size: 1.1rem; margin-bottom: 0.5rem;">Cantidades Disponibles:</h5>
+                        <p id="modalAlmuerzoCantidadPorcion" class="text-muted" style="font-size: 1rem; color: #6c757d; margin-bottom: 0;"></p>
+                        <p id="modalAlmuerzoCantidadMedia" class="text-muted" style="font-size: 1rem; color: #6c757d; margin-bottom: 0;"></p>
+                        <p id="modalAlmuerzoCantidadOrden" class="text-muted" style="font-size: 1rem; color: #6c757d; margin-bottom: 0;"></p>
+                    </div>
+                    <!-- Formulario de cantidad y forma de pago -->
+                    <form id="formAlmuerzo" class="mt-3">
+                        <div class="form-group">
+                            <h5 style="color: #2a9d8f; font-size: 1.1rem; margin-bottom: 0.5rem;">Tipo de Comida:</h5>
+                            <select id="tipoComida" name="tipoComida" class="form-control" required>
+                                <option value="porcion">Porción</option>
+                                <option value="media">Media</option>
+                                <option value="orden">Orden</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <h5 style="color: #2a9d8f; font-size: 1.1rem; margin-bottom: 0.5rem;">Cantidad:</h5>
+                            <input type="number" id="cantidad" name="cantidad" class="form-control" min="1" required>
+                        </div>
+                        <div class="form-group">
+                            <h5 style="color: #2a9d8f; font-size: 1.1rem; margin-bottom: 0.5rem;">Tortillas Extras:</h5>
+                            <div class="input-group">
+                                <span class="input-group-text">$</span>
+                                <input type="number" id="tortillasExtras" name="tortillasExtras" class="form-control" min="0" value="0" required>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <h5 style="color: #2a9d8f; font-size: 1.1rem; margin-bottom: 0.5rem;">Método de Pago:</h5>
+                            <div>
+                                <label>
+                                    <input type="radio" id="formaPagoEfectivo" name="formaPago" value="efectivo" required>
+                                    Efectivo
+                                </label>
+                            </div>
+                            <div>
+                                <label>
+                                    <input type="radio" id="formaPagoTransferencia" name="formaPago" value="transferencia" required>
+                                    Transferencia
+                                </label>
+                            </div>
+                        </div>
+                        <!-- Mostrar el total calculado debajo del formulario -->
+                        <div id="totalCalculado" class="mt-3" style="font-size: 1.2rem; color: #264653; font-weight: bold;"></div>
+                        <button type="submit" id="btnAccion" class="btn btn-primary w-100" style="background-color: #2a9d8f; border: none; border-radius: 10px; padding: 1rem; font-size: 1.1rem; font-weight: 600; letter-spacing: 0.5px; transition: all 0.3s ease;">Solicitar</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 <!-- Modal de Transferencia para Productos -->
 <div id="simulacionProductoModal" class="modal">
   <div class="modal-content">
@@ -703,6 +898,7 @@ $almuerzos = $pdo->query("
     </div>
   </div>
 </div>
+
 <!-- Modal de Efectivo para Productos -->
 <div id="efectivoProductoModal" class="modal">
   <div class="modal-content" style="width: 300px; margin: auto;">
@@ -719,255 +915,118 @@ $almuerzos = $pdo->query("
   </div>
 </div>
 
-    <!-- Modal para Almuerzos -->
-<div id="almuerzoModal" class="modal">
-    <div class="modal-content">
-        <span class="close-modal">&times;</span>
-        <div class="row">
-            <div class="col-md-5">
-                <img id="modalAlmuerzoImage" src="" alt="Almuerzo Image" class="img-fluid rounded shadow">
-            </div>
-            <div class="col-md-7">
-                <h2 id="modalAlmuerzoName" class="mb-3 fw-bold" style="color: #264653; font-size: 2rem; border-bottom: 2px solid #2a9d8f; padding-bottom: 0.5rem;"></h2>
-                <div class="product-info">
-                    <!-- Mantener el contenido de información original -->
-                    <div class="info-item mt-3">
-                        <h5 style="color: #2a9d8f; font-size: 1.1rem; margin-bottom: 0.5rem;">Precios:</h5>
-                        <p id="modalAlmuerzoPricePorcion" class="text-muted" style="font-size: 1rem; color: #6c757d; margin-bottom: 0;"></p>
-                        <p id="modalAlmuerzoPriceMedia" class="text-muted" style="font-size: 1rem; color: #6c757d; margin-bottom: 0;"></p>
-                        <p id="modalAlmuerzoPriceOrden" class="text-muted" style="font-size: 1rem; color: #6c757d; margin-bottom: 0;"></p>
-                    </div>
-                    <div class="info-item mt-3">
-                        <h5 style="color: #2a9d8f; font-size: 1.1rem; margin-bottom: 0.5rem;">Descripción:</h5>
-                        <p id="modalAlmuerzoDescription" class="text-muted" style="font-size: 1rem; color: #6c757d; margin-bottom: 0;"></p>
-                    </div>
-                    <div class="info-item mt-3">
-                        <h5 style="color: #2a9d8f; font-size: 1.1rem; margin-bottom: 0.5rem;">Cantidades Disponibles:</h5>
-                        <p id="modalAlmuerzoCantidadPorcion" class="text-muted" style="font-size: 1rem; color: #6c757d; margin-bottom: 0;"></p>
-                        <p id="modalAlmuerzoCantidadMedia" class="text-muted" style="font-size: 1rem; color: #6c757d; margin-bottom: 0;"></p>
-                        <p id="modalAlmuerzoCantidadOrden" class="text-muted" style="font-size: 1rem; color: #6c757d; margin-bottom: 0;"></p>
-                    </div>
-                    
-                </div>
-                <!-- Formulario de cantidad y forma de pago -->
-                <form id="formAlmuerzo" class="mt-3">
-                    <div class="form-group">
-                        <h5 style="color: #2a9d8f; font-size: 1.1rem; margin-bottom: 0.5rem;">Tipo de Comida:</h5>
-                        <select id="tipoComida" name="tipoComida" class="form-control" required>
-                            <option value="porcion">Porción</option>
-                            <option value="media">Media</option>
-                            <option value="orden">Orden</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <h5 style="color: #2a9d8f; font-size: 1.1rem; margin-bottom: 0.5rem;">Cantidad:</h5>
-                        <input type="number" id="cantidad" name="cantidad" class="form-control" min="1" required>
-                    </div>
-                    <div class="form-group">
-                        <h5 style="color: #2a9d8f; font-size: 1.1rem; margin-bottom: 0.5rem;">Tortillas Extras:</h5>
-                        <div class="input-group">
-                            <span class="input-group-text">$</span>
-                            <input type="number" id="tortillasExtras" name="tortillasExtras" class="form-control" min="0" value="0" required>
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <h5 style="color: #2a9d8f; font-size: 1.1rem; margin-bottom: 0.5rem;">Método de Pago:</h5>
-                        <div>
-                            <label for="formaPagoEfectivo">
-                                <input type="radio" id="formaPagoEfectivo" name="formaPago" value="efectivo" required>
-                                Efectivo
-                            </label>
-                        </div>
-                        <div>
-                            <label for="formaPagoTransferencia">
-                                <input type="radio" id="formaPagoTransferencia" name="formaPago" value="transferencia" required>
-                                Transferencia
-                            </label>
-                        </div>
-                    </div>
-                    <!-- Mostrar el total calculado debajo del formulario -->
-                    <div id="totalCalculado" class="mt-3" style="font-size: 1.2rem; color: #264653; font-weight: bold;"></div>
-                    <button type="submit" id="btnAccion" class="btn btn-primary w-100" style="background-color: #2a9d8f; border: none; border-radius: 10px; padding: 1rem; font-size: 1.1rem; font-weight: 600; letter-spacing: 0.5px; transition: all 0.3s ease;">Solicitar</button>
-                </form>
-            </div>
-        </div>
-    </div>
-
-
-<!-- Modal para Simulación de Transferencia -->
-<div id="simulacionModal" class="modal">
-    <div class="modal-content">
-        <span class="close-modal">&times;</span>
-        <h2>Simulación de Transferencia</h2>
-        <form id="formSimulacion">
-            <div class="form-group">
-                <label for="nombreBanco">Nombre del Banco</label>
-                <select id="nombreBanco" name="nombreBanco" class="form-control" required>
-                    <option value="Banco 1">Banco BBVA</option>
-                    <option value="Banco 2">Banco BANORTE</option>
-                    <option value="Banco 3">Banco HSBC</option>
-                </select>
-            </div>
-            <div class="form-group">
-                <label for="numeroCuenta">Número de Cuenta</label>
-                <input type="text" id="numeroCuenta" name="numeroCuenta" class="form-control" placeholder="1234-5678-9012-3456" required>
-            </div>
-            <div class="form-group">
-                <label for="monto">Monto</label>
-                <div class="input-group">
-                    <span class="input-group-text">$</span>
-                    <input type="number" id="monto" name="monto" class="form-control" required>
-                </div>
-            </div>
-            <button type="submit" id="btnAceptarTransferencia" class="btn btn-primary w-100" style="background-color: #264653; border: none; border-radius: 10px; padding: 1rem; font-size: 1.1rem; font-weight: 600; letter-spacing: 0.5px; transition: all 0.3s ease;">Aceptar Transferencia</button>
-        </form>
-        <div id="loading" class="loading" style="display: none; text-align: center; margin-top: 20px;">
-            <div class="spinner-border text-primary" role="status">
-                <span class="visually-hidden">Procesando...</span>
-            </div>
-            <p>Procesando su transferencia...</p>
-        </div>
-        <div id="mensajeExito" class="alert alert-success" role="alert" style="display: none; text-align: center; margin-top: 20px;">
-            Transferencia exitosa!!
-        </div>
-    </div>
-</div>
-<!-- Nuevo Modal pequeño para Efectivo -->
-<div id="efectivoModal" class="modal">
-    <div class="modal-content" style="width: 300px; margin: auto;">
-        <span class="close-modal">&times;</span>
-        <div id="loadingEfectivo" class="loading" style="display: none; text-align: center; margin-top: 20px;">
-            <div class="spinner-border text-primary" role="status">
-                <span class="visually-hidden">Procesando...</span>
-            </div>
-            <p>Procesando su solicitud...</p>
-        </div>
-        <div id="mensajeExitoEfectivo" class="alert alert-success" role="alert" style="display: none; text-align: center; margin-top: 20px;">
-            Solicitud procesada con éxito!!
-        </div>
-    </div>
-</div>
-<!-- Modal para Desayunos -->
-<div id="desayunoModal" class="modal">
+<!-- Modal de Transferencia para Desayunos -->
+<div id="simulacionDesayunoModal" class="modal">
   <div class="modal-content">
     <span class="close-modal">&times;</span>
-    <div class="row">
-      <div class="col-md-5">
-        <img id="modalDesayunoImage" src="" alt="Desayuno Image" class="img-fluid rounded shadow">
+    <h2>Simulación de Transferencia (Desayunos)</h2>
+    <form id="formSimulacionDesayuno">
+      <div class="form-group">
+        <label for="nombreBancoDesayuno">Nombre del Banco</label>
+        <select id="nombreBancoDesayuno" name="nombreBancoDesayuno" class="form-control" required>
+          <option value="BBVA">Banco BBVA</option>
+          <option value="BANORTE">Banco BANORTE</option>
+          <option value="HSBC">Banco HSBC</option>
+        </select>
       </div>
-      <div class="col-md-7">
-        <h2 id="modalDesayunoName" class="mb-3 fw-bold" style="color: #264653; font-size: 2rem;"></h2>
-        <div class="product-info">
-          <!-- Precio -->
-          <div class="info-item mt-3">
-            <h5 style="color: #2a9d8f; font-size: 1.1rem;">Precio:</h5>
-            <p id="modalDesayunoPrice" class="text-muted" style="font-size: 1rem;"></p>
-          </div>
-          <!-- Descripción -->
-          <div class="info-item mt-3">
-            <h5 style="color: #2a9d8f; font-size: 1.1rem;">Descripción:</h5>
-            <p id="modalDesayunoDescription" class="text-muted" style="font-size: 1rem;"></p>
-          </div>
-          <!-- Cantidad Disponible -->
-          <div class="info-item mt-3">
-            <h5 style="color: #2a9d8f; font-size: 1.1rem;">Cantidad Disponible:</h5>
-            <p id="modalDesayunoQuantity" class="text-muted" style="font-size: 1rem;"></p>
-          </div>
-
-          <!-- Formulario -->
-          <form id="formDesayuno" class="mt-3">
-            <!-- Cantidad a comprar -->
-            <div class="form-group">
-              <h5 style="color: #2a9d8f; font-size: 1.1rem;">Cantidad:</h5>
-              <input type="number" id="cantidadDesayuno" name="cantidadDesayuno" class="form-control" min="1" required>
-            </div>
-
-            <!-- Método de pago -->
-            <div class="form-group mt-3">
-              <h5 style="color: #2a9d8f; font-size: 1.1rem;">Método de Pago:</h5>
-              <div>
-                <label>
-                  <input type="radio" id="formaPagoEfectivoDesayuno" name="formaPagoDesayuno" value="efectivo" required>
-                  Efectivo
-                </label>
-              </div>
-              <div>
-                <label>
-                  <input type="radio" id="formaPagoTransferenciaDesayuno" name="formaPagoDesayuno" value="transferencia" required>
-                  Transferencia
-                </label>
-              </div>
-            </div>
-
-            <!-- Aquí aparece el total ANTES del botón -->
-            <div id="totalCalculadoDesayuno" class="mt-3" style="font-size: 1.2rem; color: #264653; font-weight: bold;"></div>
-
-            <!-- Botón -->
-            <button type="submit" id="btnAccionDesayuno" class="btn btn-primary w-100" 
-                    style="background-color: #2a9d8f; border: none; border-radius: 10px; padding: 1rem;">
-              Solicitar
-            </button>
-          </form>
+      <div class="form-group">
+        <label for="numeroCuentaDesayuno">Número de Cuenta</label>
+        <input type="text" id="numeroCuentaDesayuno" name="numeroCuentaDesayuno" class="form-control" placeholder="1234-5678-9012-3456" required>
+      </div>
+      <div class="form-group">
+        <label for="montoDesayuno">Monto</label>
+        <div class="input-group">
+          <span class="input-group-text">$</span>
+          <input type="number" id="montoDesayuno" name="montoDesayuno" class="form-control" required>
         </div>
       </div>
+      <button type="submit" id="btnAceptarTransferenciaDesayuno" class="btn btn-primary w-100" style="background-color: #264653; border: none; border-radius: 10px; padding: 1rem;">
+        Aceptar Transferencia
+      </button>
+    </form>
+    <div id="loadingDesayuno" class="loading" style="display: none; text-align: center; margin-top: 20px;">
+      <div class="spinner-border text-primary" role="status">
+        <span class="visually-hidden">Procesando...</span>
+      </div>
+      <p>Procesando su transferencia...</p>
+    </div>
+    <div id="mensajeExitoDesayuno" class="alert alert-success" role="alert" style="display: none; text-align: center; margin-top: 20px;">
+      ¡Transferencia exitosa!
     </div>
   </div>
 </div>
 
-
-<!-- Modal para Simulación de Transferencia -->
-<div id="simulacionModal" class="modal">
-    <div class="modal-content">
-        <span class="close-modal">&times;</span>
-        <h2>Simulación de Transferencia</h2>
-        <form id="formSimulacion">
-            <div class="form-group">
-                <label for="nombreBanco">Nombre del Banco</label>
-                <select id="nombreBanco" name="nombreBanco" class="form-control" required>
-                    <option value="BBVA">Banco BBVA</option>
-                    <option value="BANORTE">Banco BANORTE</option>
-                    <option value="HSBC">Banco HSBC</option>
-                </select>
-            </div>
-            <div class="form-group">
-                <label for="numeroCuenta">Número de Cuenta</label>
-                <input type="text" id="numeroCuenta" name="numeroCuenta" class="form-control" placeholder="1234-5678-9012-3456" required>
-            </div>
-            <div class="form-group">
-                <label for="monto">Monto</label>
-                <div class="input-group">
-                    <span class="input-group-text">$</span>
-                    <input type="number" id="monto" name="monto" class="form-control" required>
-                </div>
-            </div>
-            <button type="submit" id="btnAceptarTransferencia" class="btn btn-primary w-100" style="background-color: #264653; border: none; border-radius: 10px; padding: 1rem; font-size: 1.1rem; font-weight: 600; letter-spacing: 0.5px; transition: all 0.3s ease;">Aceptar Transferencia</button>
-        </form>
-        <div id="loading" class="loading" style="display: none; text-align: center; margin-top: 20px;">
-            <div class="spinner-border text-primary" role="status">
-                <span class="visually-hidden">Procesando...</span>
-            </div>
-            <p>Procesando su transferencia...</p>
-        </div>
-        <div id="mensajeExito" class="alert alert-success" role="alert" style="display: none; text-align: center; margin-top: 20px;">
-            Transferencia exitosa!!
-        </div>
+<!-- Modal de Efectivo para Desayunos -->
+<div id="efectivoDesayunoModal" class="modal">
+  <div class="modal-content" style="width: 300px; margin: auto;">
+    <span class="close-modal">&times;</span>
+    <div id="loadingEfectivoDesayuno" class="loading" style="display: none; text-align: center; margin-top: 20px;">
+      <div class="spinner-border text-primary" role="status">
+        <span class="visually-hidden">Procesando...</span>
+      </div>
+      <p>Procesando su solicitud...</p>
     </div>
+    <div id="mensajeExitoEfectivoDesayuno" class="alert alert-success" role="alert" style="display: none; text-align: center; margin-top: 20px;">
+      ¡Solicitud procesada con éxito!
+    </div>
+  </div>
 </div>
 
-<!-- Modal para Efectivo -->
-<div id="efectivoModal" class="modal">
-    <div class="modal-content" style="width: 300px; margin: auto;">
-        <span class="close-modal">&times;</span>
-        <div id="loadingEfectivo" class="loading" style="display: none; text-align: center; margin-top: 20px;">
-            <div class="spinner-border text-primary" role="status">
-                <span class="visually-hidden">Procesando...</span>
-            </div>
-            <p>Procesando su solicitud...</p>
+<!-- Modal de Transferencia para Almuerzos -->
+<div id="simulacionAlmuerzoModal" class="modal">
+  <div class="modal-content">
+    <span class="close-modal">&times;</span>
+    <h2>Simulación de Transferencia (Almuerzos)</h2>
+    <form id="formSimulacionAlmuerzo">
+      <div class="form-group">
+        <label for="nombreBancoAlmuerzo">Nombre del Banco</label>
+        <select id="nombreBancoAlmuerzo" name="nombreBancoAlmuerzo" class="form-control" required>
+          <option value="BBVA">Banco BBVA</option>
+          <option value="BANORTE">Banco BANORTE</option>
+          <option value="HSBC">Banco HSBC</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label for="numeroCuentaAlmuerzo">Número de Cuenta</label>
+        <input type="text" id="numeroCuentaAlmuerzo" name="numeroCuentaAlmuerzo" class="form-control" placeholder="1234-5678-9012-3456" required>
+      </div>
+      <div class="form-group">
+        <label for="montoAlmuerzo">Monto</label>
+        <div class="input-group">
+          <span class="input-group-text">$</span>
+          <input type="number" id="montoAlmuerzo" name="montoAlmuerzo" class="form-control" required>
         </div>
-        <div id="mensajeExitoEfectivo" class="alert alert-success" role="alert" style="display: none; text-align: center; margin-top: 20px;">
-            Solicitud procesada con éxito!!
-        </div>
+      </div>
+      <button type="submit" id="btnAceptarTransferenciaAlmuerzo" class="btn btn-primary w-100" style="background-color: #264653; border: none; border-radius: 10px; padding: 1rem;">
+        Aceptar Transferencia
+      </button>
+    </form>
+    <div id="loadingAlmuerzo" class="loading" style="display: none; text-align: center; margin-top: 20px;">
+      <div class="spinner-border text-primary" role="status">
+        <span class="visually-hidden">Procesando...</span>
+      </div>
+      <p>Procesando su transferencia...</p>
     </div>
+    <div id="mensajeExitoAlmuerzo" class="alert alert-success" role="alert" style="display: none; text-align: center; margin-top: 20px;">
+      ¡Transferencia exitosa!
+    </div>
+  </div>
+</div>
+
+<!-- Modal de Efectivo para Almuerzos -->
+<div id="efectivoAlmuerzoModal" class="modal">
+  <div class="modal-content" style="width: 300px; margin: auto;">
+    <span class="close-modal">&times;</span>
+    <div id="loadingEfectivoAlmuerzo" class="loading" style="display: none; text-align: center; margin-top: 20px;">
+      <div class="spinner-border text-primary" role="status">
+        <span class="visually-hidden">Procesando...</span>
+      </div>
+      <p>Procesando su solicitud...</p>
+    </div>
+    <div id="mensajeExitoEfectivoAlmuerzo" class="alert alert-success" role="alert" style="display: none; text-align: center; margin-top: 20px;">
+      ¡Solicitud procesada con éxito!
+    </div>
+  </div>
 </div>
 
 
@@ -1178,13 +1237,63 @@ $(document).ready(function() {
     });
 
     // Eventos de modales
-    $(document).on('click', '.fa-eye, .fa-basket-shopping', function() {
+    $(document).on('click', '.add-cart', function () {
         const productCard = $(this).closest('.card-product');
+        const productType = $(this).data('type'); // Obtener el tipo de producto
+
         const productName = productCard.find('h3').text();
         const productImage = productCard.find('img').attr('src');
         const productDescription = productCard.data('description');
 
-        if ($(this).closest('.card-product').parent().attr('id') === 'container-almuerzos') {
+        if (productType === 'producto') {
+            // Lógica para productos
+            const productQuantity = productCard.data('quantity');
+            const productPrice = productCard.find('.price').text().replace('$', '');
+            const productCategory = productCard.data('category');
+            const productTypeData = productCard.data('type');
+            var productStatus = (productQuantity > 0) ? 'Disponible' : 'Agotado';
+
+            $('#modalProductName').text(productName);
+            $('#modalProductImage').attr('src', productImage);
+            $('#modalProductDescription').text(productDescription);
+            $('#modalProductQuantity').text(`${productQuantity}`);
+            $('#modalProductPrice').text(`$${productPrice}`);
+            $('#modalProductCategory').text(productCategory);
+            $('#modalProductType').text(productTypeData);
+            $('#modalProductStatus').text(productStatus);
+            // Calcular el total en tiempo real
+            $('#cantidadProducto').on('input', function () {
+                const cantidad = parseFloat($(this).val());
+                const precio = parseFloat(productPrice);
+                const total = cantidad * precio;
+                $('#totalCalculadoProducto').text(`Total a pagar: $${total.toFixed(2)}`);
+            });
+
+            // Mostrar el modal de productos
+            $('#productModal').fadeIn(300);
+        } else if (productType === 'desayuno') {
+            // Lógica para desayunos
+            const productQuantity = productCard.data('cantidad');
+            const productPrice = productCard.find('.price').text().replace('$', '');
+
+            $('#modalDesayunoName').text(productName);
+            $('#modalDesayunoImage').attr('src', productImage);
+            $('#modalDesayunoDescription').text(productDescription);
+            $('#modalDesayunoQuantity').text(productQuantity);
+            
+            $('#modalDesayunoPrice').text(`$${productPrice}`);
+
+            // Calcular el total en tiempo real
+            $('#cantidadDesayuno').on('input', function () {
+                const cantidad = parseFloat($(this).val());
+                const precio = parseFloat(productPrice);
+                const total = cantidad * precio;
+                $('#totalCalculadoDesayuno').text(`Total: $${total.toFixed(2)}`);
+            });
+
+            // Mostrar el modal de desayunos
+            $('#desayunoModal').fadeIn(300);
+        } else if (productType === 'almuerzo') {
             // Lógica para almuerzos
             const productQuantityPorcion = productCard.data('cantidad-porcion');
             const productQuantityMedia = productCard.data('cantidad-media');
@@ -1200,65 +1309,155 @@ $(document).ready(function() {
             $('#modalAlmuerzoCantidadMedia').text(`${productQuantityMedia} disponibles`);
             $('#modalAlmuerzoCantidadOrden').text(`${productQuantityOrden} disponibles`);
             $('#modalAlmuerzoEstadoInventario').text((productQuantityPorcion > 0 || productQuantityMedia > 0 || productQuantityOrden > 0) ? 'Disponible' : 'Agotado');
+
+            // Mostrar el modal de almuerzos
             $('#almuerzoModal').fadeIn(300);
-            
-            // Inicializar formulario de almuerzos
-            inicializarFormularioAlmuerzo();
-        }  else {
-            // Lógica para productos
-            const productQuantity = productCard.data('quantity');
-            const productPrice = productCard.find('.price').text().replace('$', ''); // Obtener el precio del producto
-
-            $('#modalProductName').text(productName);
-            $('#modalProductImage').attr('src', productImage);
-            $('#modalProductDescription').text(productDescription);
-            $('#modalProductQuantity').text(`Cantidad en inventario: ${productQuantity}`);
-            $('#modalProductPrice').text(`$${productPrice}`); // Mostrar el precio en el modal
-
-            // Calcular el total en tiempo real
-            $('#cantidadProducto').on('input', function() {
-                const cantidad = parseFloat($(this).val());
-                const precio = parseFloat(productPrice);
-                const total = cantidad * precio;
-                $('#totalCalculadoProducto').text(`Total a pagar: $${total.toFixed(2)}`);
-            });
-
-            // Mostrar el modal de productos
-            $('#productModal').fadeIn(300);
         }
     });
 
-    if ($(this).closest('.card-product').parent().attr('id') === 'container-breakfasts') {
-            // Lógica para desayunos
-            const productQuantity = productCard.data('quantity');
-            const productPrice = productCard.find('.price').text().replace('$', ''); // Obtener el precio del desayuno
-
-            $('#modalDesayunoName').text(productName);
-            $('#modalDesayunoImage').attr('src', productImage);
-            $('#modalDesayunoDescription').text(productDescription);
-            $('#modalDesayunoQuantity').text(`Cantidad: ${productQuantity}`);
-            $('#modalDesayunoPrice').text(`$${productPrice}`); // Mostrar el precio en el modal
-
-            // Calcular el total en tiempo real
-            $('#cantidadDesayuno').on('input', function() {
-                const cantidad = parseFloat($(this).val());
-                const precio = parseFloat(productPrice);
-                const total = cantidad * precio;
-                $('#totalCalculadoDesayuno').text(`Total: $${total.toFixed(2)}`);
-            });
-
-            // Mostrar el modal de desayunos
-            $('#desayunoModal').fadeIn(300);
-        }
-
-    // Cerrar modales
-    $('.close-modal, .modal').on('click', function(event) {
+    // Cerrar modales al hacer clic fuera o en el botón de cerrar
+    $('.close-modal, .modal').on('click', function (event) {
         if ($(event.target).hasClass('modal') || $(event.target).hasClass('close-modal')) {
             $('.modal').fadeOut(300);
         }
     });
+    
+    $('#menu-semanal-btn').click(function(e) {
+        e.preventDefault();
+        $.get('menu_semanal.php', function(data) {
+            var cards = $(data).find('.menu-card').clone();
+            cards.each(function() {
+                $(this).find('.btn-actions, a').remove();
+                if ($(this).find('ul li').length === 0) {
+                    $(this).find('p').remove();
+                    $(this).append('<p>Menú del día aún no disponible</p>');
+                }
+            });
+            $('#menu-semanal-cards').html(cards);
+            $('#menu-semanal-modal').modal('show');
+        }).fail(function() {
+            alert('Error al cargar el menú semanal.');
+        });
+    });
 
-    // Cambiar el texto del botón según el método de pago (desayunos)
+    $('#menu-semanal-modal .close').click(function() {
+        $('#menu-semanal-modal').modal('hide');
+    });
+// Cambiar texto del botón según método de pago (productos)
+$('#formaPagoEfectivoProducto').on('change', function() {
+    $('#btnAccionProducto').text('Solicitar');
+});
+
+$('#formaPagoTransferenciaProducto').on('change', function() {
+    $('#btnAccionProducto').text('Comprar');
+});
+
+// Manejar el envío del formulario de producto
+// Manejar el envío del formulario de producto
+$('#formProducto').on('submit', function(event) {
+    event.preventDefault();
+
+    const nombreProducto = $('#modalProductName').text();
+    const cantidad = $('#cantidadProducto').val();
+    const precio = parseFloat($('#modalProductPrice').text().replace('$', ''));
+    const total = cantidad * precio;
+
+    if ($('#formaPagoEfectivoProducto').is(':checked')) {
+        // Lógica para pago en efectivo
+        const datos = {
+            nombrePreventa: nombreProducto,
+            cantidad_orden: cantidad,
+            precioUnitarioPreventa: precio,
+            precioTotalPreventa: total,
+            metodoPago: 'efectivo'
+        };
+
+        // Mostrar indicador de carga
+        $('#efectivoProductoModal').fadeIn(300);
+        $('#loadingEfectivoProducto').show();
+        $('#mensajeExitoEfectivoProducto').hide();
+
+        // Simular un retraso de 3 segundos antes de enviar la solicitud
+        setTimeout(function() {
+            // Enviar datos al servidor
+            $.ajax({
+                url: 'guardar_preventa_producto.php',
+                method: 'POST',
+                data: datos,
+                success: function(response) {
+                    // Ocultar el indicador de carga
+                    $('#loadingEfectivoProducto').hide();
+
+                    // Mostrar el mensaje de éxito
+                    $('#mensajeExitoEfectivoProducto').show();
+
+                    // Ocultar el modal después de 2 segundos
+                    setTimeout(function() {
+                        $('#efectivoProductoModal').fadeOut(300);
+                        $('#productModal').fadeOut(300);
+                        location.reload();
+                    }, 2000);
+                },
+                error: function() {
+                    // Ocultar el indicador de carga en caso de error
+                    $('#loadingEfectivoProducto').hide();
+                    alert('Error al guardar la solicitud de producto');
+                    $('#efectivoProductoModal').fadeOut(300);
+                }
+            });
+        }, 3000);
+    } else if ($('#formaPagoTransferenciaProducto').is(':checked')) {
+        // Lógica para transferencia
+        $('#simulacionProductoModal').fadeIn(300);
+        $('#montoProducto').val(total.toFixed(2));
+
+        // Preparar el procesamiento de la transferencia
+        $('#formSimulacionProducto').off('submit').on('submit', function(e) {
+            e.preventDefault();
+
+            $('#loadingProducto').show();
+            $('#btnAceptarTransferenciaProducto').prop('disabled', true);
+
+            const fechaActual = new Date().toISOString().slice(0, 19).replace('T', ' ');
+
+            // Datos para la tabla pagos
+            const datosPago = {
+                nombrePagos: nombreProducto,
+                canTotalP: total,
+                fePago: fechaActual,
+                metodoPago: 'transferencia',
+                cantidad_orden: cantidad
+            };
+
+            // Simular procesamiento y enviar datos
+            setTimeout(function() {
+                $.ajax({
+                    url: 'guardar_pago_producto.php',
+                    method: 'POST',
+                    data: datosPago,
+                    success: function(response) {
+                        $('#loadingProducto').hide();
+                        $('#mensajeExitoProducto').show();
+
+                        setTimeout(function() {
+                            $('#mensajeExitoProducto').hide();
+                            $('#simulacionProductoModal').fadeOut(300);
+                            $('#productModal').fadeOut(300);
+                            $('#btnAceptarTransferenciaProducto').prop('disabled', false);
+                            location.reload();
+                        }, 2000);
+                    },
+                    error: function() {
+                        $('#loadingProducto').hide();
+                        alert('Error al procesar el pago');
+                        $('#btnAceptarTransferenciaProducto').prop('disabled', false);
+                    }
+                });
+            }, 3000);
+        });
+    }
+});
+    // Cambiar texto del botón según método de pago (desayunos)
     $('#formaPagoEfectivoDesayuno').on('change', function() {
         $('#btnAccionDesayuno').text('Solicitar');
     });
@@ -1278,39 +1477,99 @@ $(document).ready(function() {
 
         if ($('#formaPagoEfectivoDesayuno').is(':checked')) {
             // Lógica para pago en efectivo
-            $('#efectivoModal').fadeIn(300);
-            $('#loadingEfectivo').show();
+            const datos = {
+                nombrePreventa: nombreDesayuno,
+                cantidad_orden: cantidad,
+                precioUnitarioPreventa: precio,
+                precioTotalPreventa: total,
+                metodoPago: 'efectivo'
+            };
 
+            // Mostrar indicador de carga
+            $('#efectivoDesayunoModal').fadeIn(300);
+            $('#loadingEfectivoDesayuno').show();
+            $('#mensajeExitoEfectivoDesayuno').hide();
+
+            // Simular un retraso de 3 segundos antes de enviar la solicitud
             setTimeout(function() {
-                $('#loadingEfectivo').hide();
-                $('#mensajeExitoEfectivo').show();
-                setTimeout(function() {
-                    $('#efectivoModal').fadeOut(300);
-                    $('#desayunoModal').fadeOut(300);
-                }, 2000);
+                // Enviar datos al servidor
+                
+                $.ajax({
+                    url: 'guardar_preventa_desayuno.php',
+                    method: 'POST',
+                    data: datos,
+                    success: function(response) {
+                        // Ocultar el indicador de carga
+                        $('#loadingEfectivoDesayuno').hide();
+
+                        // Mostrar el mensaje de éxito
+                        $('#mensajeExitoEfectivoDesayuno').show();
+
+                        // Ocultar el modal después de 2 segundos
+                        setTimeout(function() {
+                            $('#efectivoDesayunoModal').fadeOut(300);
+                            $('#desayunoModal').fadeOut(300);
+                            location.reload();
+                        }, 2000);
+                    },
+                    error: function() {
+                        // Ocultar el indicador de carga en caso de error
+                        $('#loadingEfectivoDesayuno').hide();
+                        alert('Error al guardar la solicitud de desayuno');
+                        $('#efectivoDesayunoModal').fadeOut(300);
+                    }
+                });
             }, 3000);
         } else if ($('#formaPagoTransferenciaDesayuno').is(':checked')) {
-            // Mostrar el modal de transferencia
-            $('#simulacionModal').fadeIn(300);
-            $('#monto').val(total.toFixed(2));
+            // Lógica para transferencia
+            $('#simulacionDesayunoModal').fadeIn(300);
+            $('#montoDesayuno').val(total.toFixed(2));
+
+            // Preparar el procesamiento de la transferencia
+            $('#formSimulacionDesayuno').off('submit').on('submit', function(e) {
+                e.preventDefault();
+
+                $('#loadingDesayuno').show();
+                $('#btnAceptarTransferenciaDesayuno').prop('disabled', true);
+
+                const fechaActual = new Date().toISOString().slice(0, 19).replace('T', ' ');
+
+                // Datos para la tabla pagos
+                const datosPago = {
+                    nombrePagos: nombreDesayuno,
+                    canTotalP: total,
+                    fePago: fechaActual,
+                    metodoPago: 'transferencia',
+                    cantidad_orden: cantidad
+                };
+
+                // Simular procesamiento y enviar datos
+                setTimeout(function() {
+                    $.ajax({
+                        url: 'guardar_pago_desayuno.php',
+                        method: 'POST',
+                        data: datosPago,
+                        success: function(response) {
+                            $('#loadingDesayuno').hide();
+                            $('#mensajeExitoDesayuno').show();
+
+                            setTimeout(function() {
+                                $('#mensajeExitoDesayuno').hide();
+                                $('#simulacionDesayunoModal').fadeOut(300);
+                                $('#desayunoModal').fadeOut(300);
+                                $('#btnAceptarTransferenciaDesayuno').prop('disabled', false);
+                                location.reload();
+                            }, 2000);
+                        },
+                        error: function() {
+                            $('#loadingDesayuno').hide();
+                            alert('Error al procesar el pago');
+                            $('#btnAceptarTransferenciaDesayuno').prop('disabled', false);
+                        }
+                    });
+                }, 3000);
+            });
         }
-    });
-
-    // Manejar el envío del formulario de transferencia
-    $('#formSimulacion').on('submit', function(event) {
-        event.preventDefault();
-        $('#loading').show();
-        $('#btnAceptarTransferencia').prop('disabled', true);
-
-        setTimeout(function() {
-            $('#loading').hide();
-            $('#mensajeExito').show();
-            setTimeout(function() {
-                $('#simulacionModal').fadeOut(300);
-                $('#desayunoModal').fadeOut(300);
-                $('#btnAceptarTransferencia').prop('disabled', false);
-            }, 2000);
-        }, 3000);
     });
 
     // Cargar datos de desayunos
@@ -1325,19 +1584,20 @@ $(document).ready(function() {
                 if (data.length > 0) {
                     data.forEach(desayuno => {
                         container.append(`
-                            <div class="card-product" data-description="${desayuno.descripcionDesayuno}" data-quantity="${desayuno.cantidadDesayuno}">
+                            <div class="card-product" data-description="${desayuno.descripcionDesayuno}" data-cantidad="${desayuno.cantidadDesayuno}">
                                 <div class="container-img">
                                     <img src="uploads/${desayuno.imgDesayuno}" alt="${desayuno.nombreProducto}" />
                                 </div>
                                 <div class="content-card-product">
                                     <h3>${desayuno.nombreProducto}</h3>
-                                    <span class="add-cart">
+                                    <span class="add-cart" data-type="desayuno">
                                         <i class="fa-solid fa-basket-shopping"></i>
                                     </span>
                                     <p class="price">$${desayuno.precioDesayuno}</p>
                                 </div>
                             </div>
                         `);
+                        console.log(desayuno.cantidadDesayuno);
                     });
                 } else {
                     container.append('<p>No hay desayunos disponibles para hoy.</p>');
@@ -1374,9 +1634,9 @@ $(document).ready(function() {
                                             <p class="price">Media: $${almuerzo.precioMedia}</p>
                                             <p class="price">Orden: $${almuerzo.precioOrden}</p>
                                         </div>
-                                        <div class="add-cart">
+                                        <span class="add-cart" data-type="almuerzo">
                                             <i class="fa-solid fa-basket-shopping"></i>
-                                        </div>
+                                        </span>
                                     </div>
                                 </div>
                             </div>
@@ -1454,7 +1714,7 @@ $(document).ready(function() {
         calcularTotalAlmuerzo();
     });
     
-    // Cambiar texto del botón según método de pago
+    // Cambiar texto del botón según método de pago (almuerzos)
     $('#formaPagoTransferencia').on('change', function() {
         $('#btnAccion').text('Comprar');
     });
@@ -1479,53 +1739,61 @@ $(document).ready(function() {
                 nombrePreventa: nombreAlmuerzo,
                 cantidad_orden: cantidadValue,
                 precioUnitarioPreventa: (tipoComida === 'porcion') ? 40 : 
-                                        (tipoComida === 'media') ? 55 : 100,
+                                    (tipoComida === 'media') ? 55 : 100,
                 precioTotalPreventa: total,
                 metodoPago: 'efectivo',
                 tipoComida: tipoComida,
                 tortillasExtras: tortillasValue
             };
-            
+
             // Mostrar indicador de carga
-            $('#efectivoModal').fadeIn(300);
-            $('#loadingEfectivo').show();
-            
-            // Enviar datos al servidor
-            $.ajax({
-                url: 'guardar_preventa.php',
-                method: 'POST',
-                data: datos,
-                success: function(response) {
-                    $('#loadingEfectivo').hide();
-                    $('#mensajeExitoEfectivo').show();
-                    
-                    setTimeout(function() {
-                        $('#efectivoModal').fadeOut(300);
-                        $('#almuerzoModal').fadeOut(300);
-                        location.reload();
-                    }, 2000);
-                },
-                error: function() {
-                    $('#loadingEfectivo').hide();
-                    alert('Error al guardar la solicitud de almuerzo');
-                    $('#efectivoModal').fadeOut(300);
-                }
-            });
-            
+            $('#efectivoAlmuerzoModal').fadeIn(300);
+            $('#loadingEfectivoAlmuerzo').show();
+            $('#mensajeExitoEfectivoAlmuerzo').hide(); // Asegurarse de que el mensaje de éxito esté oculto
+
+            // Simular un retraso de 3 segundos antes de enviar la solicitud
+            setTimeout(function() {
+                // Enviar datos al servidor
+                $.ajax({
+                    url: 'guardar_preventa.php',
+                    method: 'POST',
+                    data: datos,
+                    success: function(response) {
+                        // Ocultar el indicador de carga
+                        $('#loadingEfectivoAlmuerzo').hide();
+
+                        // Mostrar el mensaje de éxito
+                        $('#mensajeExitoEfectivoAlmuerzo').show();
+
+                        // Ocultar el modal después de 2 segundos
+                        setTimeout(function() {
+                            $('#efectivoAlmuerzoModal').fadeOut(300);
+                            $('#almuerzoModal').fadeOut(300);
+                            location.reload();
+                        }, 2000);
+                    },
+                    error: function() {
+                        // Ocultar el indicador de carga en caso de error
+                        $('#loadingEfectivoAlmuerzo').hide();
+                        alert('Error al guardar la solicitud de almuerzo');
+                        $('#efectivoAlmuerzoModal').fadeOut(300);
+                    }
+                });
+            }, 3000); // Simular un retraso de 3 segundos para el procesamiento
         } else if ($('#formaPagoTransferencia').is(':checked')) {
-            // Mostrar modal de transferencia
-            $('#simulacionModal').fadeIn(300);
-            $('#monto').val(total.toFixed(2));
-            
+            // Lógica para transferencia (sin cambios)
+            $('#simulacionAlmuerzoModal').fadeIn(300);
+            $('#montoAlmuerzo').val(total.toFixed(2));
+
             // Preparar el procesamiento de la transferencia
-            $('#formSimulacion').off('submit').on('submit', function(e) {
+            $('#formSimulacionAlmuerzo').off('submit').on('submit', function(e) {
                 e.preventDefault();
-                
-                $('#loading').show();
-                $('#btnAceptarTransferencia').prop('disabled', true);
-                
+
+                $('#loadingAlmuerzo').show();
+                $('#btnAceptarTransferenciaAlmuerzo').prop('disabled', true);
+
                 const fechaActual = new Date().toISOString().slice(0, 19).replace('T', ' ');
-                
+
                 // Datos para la tabla pagos
                 const datosPago = {
                     nombrePagos: nombreAlmuerzo,
@@ -1536,7 +1804,7 @@ $(document).ready(function() {
                     tipoComida: tipoComida,
                     tortillasExtras: tortillasValue
                 };
-                
+
                 // Simular procesamiento y enviar datos
                 setTimeout(function() {
                     $.ajax({
@@ -1544,21 +1812,21 @@ $(document).ready(function() {
                         method: 'POST',
                         data: datosPago,
                         success: function(response) {
-                            $('#loading').hide();
-                            $('#mensajeExito').show();
-                            
+                            $('#loadingAlmuerzo').hide();
+                            $('#mensajeExitoAlmuerzo').show();
+
                             setTimeout(function() {
-                                $('#mensajeExito').hide();
-                                $('#simulacionModal').fadeOut(300);
+                                $('#mensajeExitoAlmuerzo').hide();
+                                $('#simulacionAlmuerzoModal').fadeOut(300);
                                 $('#almuerzoModal').fadeOut(300);
-                                $('#btnAceptarTransferencia').prop('disabled', false);
+                                $('#btnAceptarTransferenciaAlmuerzo').prop('disabled', false);
                                 location.reload();
                             }, 2000);
                         },
                         error: function() {
-                            $('#loading').hide();
+                            $('#loadingAlmuerzo').hide();
                             alert('Error al procesar el pago');
-                            $('#btnAceptarTransferencia').prop('disabled', false);
+                            $('#btnAceptarTransferenciaAlmuerzo').prop('disabled', false);
                         }
                     });
                 }, 3000);
@@ -1597,7 +1865,7 @@ $(document).ready(function() {
             (porcion > 0 || media > 0 || orden > 0) ? 'Disponible' : 'Agotado'
         );
     }
-}); 
+});
 </script>
 </body>
 </html>
