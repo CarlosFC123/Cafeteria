@@ -14,22 +14,27 @@ if ($conn->connect_error) {
 
 // Recibir los datos del formulario
 $nombrePagos = $_POST['nombrePagos'];
-$canTotalP = $_POST['canTotalP'];
+$canTotalP = floatval($_POST['canTotalP']); // Convertir a flotante
 $fePago = $_POST['fePago'];
 $metodoPago = $_POST['metodoPago'];
-$cantidad_orden = $_POST['cantidad_orden'];
+$cantidad_orden = intval($_POST['cantidad_orden']); // Convertir a entero
+
+// Validar datos
+if (empty($nombrePagos) || $canTotalP <= 0 || empty($fePago) || empty($metodoPago) || $cantidad_orden <= 0) {
+    die("Datos inválidos o incompletos.");
+}
 
 // Verificar si hay suficiente stock
-$sqlCheck = "SELECT cantidadProducto FROM productos_proveedores WHERE nombreProducto = '$nombrePagos'";
+$sqlCheck = "SELECT canActual FROM inventario WHERE idProducto = (SELECT idProducto FROM productos WHERE nbProducto = '$nombrePagos')";
 $result = $conn->query($sqlCheck);
 
 if ($result->num_rows > 0) {
     $row = $result->fetch_assoc();
-    if ($row['cantidadProducto'] < $cantidad_orden) {
-        die("No hay suficiente cantidad para este producto.");
+    if ($row['canActual'] < $cantidad_orden) {
+        die("No hay suficiente stock para este producto.");
     }
 } else {
-    die("Producto no encontrado.");
+    die("Producto no encontrado en el inventario.");
 }
 
 // Iniciar transacción
@@ -39,13 +44,17 @@ try {
     // Insertar en la tabla pagos
     $sqlInsert = "INSERT INTO pagos (nombrePagos, canTotalP, fePago, metodoPago) 
                   VALUES ('$nombrePagos', $canTotalP, '$fePago', '$metodoPago')";
-    $conn->query($sqlInsert);
+    if (!$conn->query($sqlInsert)) {
+        throw new Exception("Error al insertar en la tabla pagos: " . $conn->error);
+    }
 
-    // Actualizar la cantidad en productos_proveedores
-    $sqlUpdate = "UPDATE productos_proveedores 
-                  SET cantidadProducto = cantidadProducto - $cantidad_orden 
-                  WHERE nombreProducto = '$nombrePagos'";
-    $conn->query($sqlUpdate);
+    // Actualizar la cantidad en el inventario
+    $sqlUpdate = "UPDATE inventario 
+                  SET canActual = canActual - $cantidad_orden 
+                  WHERE idProducto = (SELECT idProducto FROM productos WHERE nbProducto = '$nombrePagos')";
+    if (!$conn->query($sqlUpdate)) {
+        throw new Exception("Error al actualizar el inventario: " . $conn->error);
+    }
 
     // Confirmar la transacción
     $conn->commit();

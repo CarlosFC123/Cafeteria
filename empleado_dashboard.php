@@ -99,27 +99,79 @@ $almuerzos = $pdo->query("
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 
     <style>
+        
+        /* Estilos comunes para todos los modales */
+        .modal {
+            display: none; /* Oculta el modal por defecto */
+            position: fixed; /* Fija el modal en la pantalla */
+            z-index: 1000; /* Asegura que esté por encima de otros elementos */
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto; /* Permite el desplazamiento si el contenido es muy largo */
+            background-color: rgba(0, 0, 0, 0.7); /* Fondo oscuro semitransparente */
+            backdrop-filter: blur(5px); /* Efecto de desenfoque */
+            transition: all 0.3s ease; /* Transición suave */
+        }
+
+        /* Estilos para el contenido del modal */
         .modal-content {
-            background-color: #fff;
-            margin: 5% auto;
+            background-color: #fff; /* Fondo blanco */
+            margin: 5% auto; /* Centra el modal vertical y horizontalmente */
             padding: 25px;
             border: none;
             width: 90%;
-            max-width: 800px;
-            border-radius: 15px;
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
-            transform: translateY(0);
-            animation: modalFadeIn 0.4s;
+            max-width: 800px; /* Ancho máximo del modal */
+            border-radius: 15px; /* Bordes redondeados */
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2); /* Sombra */
+            transform: translateY(0); /* Posición inicial */
+            animation: modalFadeIn 0.4s; /* Animación de aparición */
+            position: relative; /* Asegura que el contenido no se mueva */
         }
+
+        /* Animación de aparición del modal */
         @keyframes modalFadeIn {
             from {
                 opacity: 0;
-                transform: translateY(-50px);
+                transform: translateY(-50px); /* Comienza 50px más arriba */
             }
             to {
                 opacity: 1;
-                transform: translateY(0);
+                transform: translateY(0); /* Termina en su posición original */
             }
+        }
+
+        /* Estilos específicos para cada modal */
+        #productModal.modal,
+        #desayunoModal.modal,
+        #almuerzoModal.modal {
+            display: none; /* Oculta el modal por defecto */
+            position: fixed; /* Fija el modal en la pantalla */
+            z-index: 1000; /* Asegura que esté por encima de otros elementos */
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto; /* Permite el desplazamiento si el contenido es muy largo */
+            background-color: rgba(0, 0, 0, 0.7); /* Fondo oscuro semitransparente */
+            backdrop-filter: blur(5px); /* Efecto de desenfoque */
+            transition: all 0.3s ease; /* Transición suave */
+        }
+
+        /* Estilos para las tarjetas de productos */
+        .card-product {
+            width: 100%;
+            max-width: 300px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            overflow: hidden;
+            background: #fff;
+            padding: 10px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
         }
         .close-modal {
             color: #777;
@@ -193,40 +245,7 @@ $almuerzos = $pdo->query("
         .btn-todo-producto { 
             display: none;
         }
-        .modalUser {
-            display: none;
-            position: fixed;
-            z-index: 1000;
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
-            overflow: auto;
-            background-color: rgba(0, 0, 0, 0.7);
-            backdrop-filter: blur(5px);
-        }
-        .modal-contentUser {
-            background-color: #fff;
-            margin: 5% auto;
-            padding: 20px;
-            border: 1px solid #888;
-            width: 90%;
-            max-width: 600px;
-            border-radius: 10px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-        }
-        .close-modalUser {
-            color: #aaa;
-            float: right;
-            font-size: 28px;
-            font-weight: bold;
-            cursor: pointer;
-        }
-        .close-modalUser:hover,
-        .close-modalUser:focus {
-            color: #000;
-            text-decoration: none;
-        }
+        
         .modal-dialog {
             width: 80%;
             max-width: 1000px;
@@ -264,54 +283,7 @@ $almuerzos = $pdo->query("
             justify-content: space-around;
             flex-wrap: wrap;
         }
-        #productModal.modal {
-            display: none;
-            position: fixed;
-            z-index: 1000;
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
-            overflow: auto;
-            background-color: rgba(0, 0, 0, 0.7);
-            backdrop-filter: blur(5px);
-            transition: all 0.3s ease;
-        }
-        #productModal .modal-content {
-            background-color: #fff;
-            margin: 5% auto;
-            padding: 25px;
-            border: none;
-            width: 90%;
-            max-width: 800px;
-            border-radius: 15px;
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
-            transform: translateY(0);
-            animation: modalFadeIn 0.4s;
-        }
-        @keyframes modalFadeIn {
-            from {
-                opacity: 0;
-                transform: translateY(-50px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-        .card-product {
-            width: 100%;
-            max-width: 300px;
-            border: 1px solid #ddd;
-            border-radius: 8px;
-            overflow: hidden;
-            background: #fff;
-            padding: 10px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            text-align: center;
-        }
+
         .container-img {
             width: 100%;
             height: 180px;
@@ -367,95 +339,52 @@ $almuerzos = $pdo->query("
         .add-cart i {
             font-size: 18px;
         }
-        .modalUser {
-    display: none;
-    position: fixed;
-    z-index: 1000;
-    left: 0;
-    top: 0;
-    width: 100%;
-    height: 100%;
-    overflow: auto;
-    background-color: rgba(0, 0, 0, 0.7);
-    backdrop-filter: blur(5px);
-}
-
-.modal-contentUser {
-    background-color: #fff;
-    margin: 5% auto;
-    padding: 20px;
-    border: 1px solid #888;
-    width: 90%;
-    max-width: 600px;
-    border-radius: 10px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-}
-
-.close-modalUser {
-    color: #aaa;
-    float: right;
-    font-size: 28px;
-    font-weight: bold;
-    cursor: pointer;
-}
-
-.close-modalUser:hover,
-.close-modalUser:focus {
-    color: #000;
-    text-decoration: none;
-}
 
 
-/* Estilo normal para pantallas grandes */
-.cart-button {
-  display: flex;
-  align-items: center;
-  background-color:rgb(255, 255, 255);
-  color: black;
-  border: none;
-  border-radius: 30px;
-  padding: 10px 20px;
-  cursor: pointer;
-  transition: background-color 0.3s, transform 0.2s;
-  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-  margin-left: auto;
-}
+        /* Estilo normal para pantallas grandes */
+        .cart-button {
+        display: flex;
+        align-items: center;
+        background-color:rgb(255, 255, 255);
+        color: black;
+        border: none;
+        border-radius: 30px;
+        padding: 10px 20px;
+        cursor: pointer;
+        transition: background-color 0.3s, transform 0.2s;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        margin-left: auto;
+        }
 
-.cart-button:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 8px rgba(0,0,0,0.15);
-}
+        .cart-button:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+        }
 
-.cart-icon {
-  font-size: 1.5rem;
-  margin-right: 10px;
-  position: relative;
-}
+        .cart-icon {
+        font-size: 1.5rem;
+        margin-right: 10px;
+        position: relative;
+        }
 
-.cart-text {
-  font-weight: 600;
-  font-size: 1rem;
-}
+        .cart-text {
+        font-weight: 600;
+        font-size: 1rem;
+        }
 
+        @media screen and (max-width: 768px) {
+            .cart-button {
+                background-color: transparent; 
+                box-shadow: none; 
+                padding: 0; 
+            }
+            
+            .cart-text {
+                display: none; 
+            } 
+        }
 
-
-/* Media query para dispositivos móviles */
-@media screen and (max-width: 768px) {
-  .cart-button {
-    background-color: transparent; /* Elimina el fondo azul */
-    box-shadow: none; /* Elimina la sombra */
-    padding: 0; /* Elimina el padding */
-  }
-  
-  .cart-text {
-    display: none; /* Oculta el texto "Carrito" */
-  }
-  
-
-  
-
-}
-    </style>
+</style>
 </head>
 <body>
     <header>
@@ -1343,120 +1272,117 @@ $(document).ready(function() {
     $('#menu-semanal-modal .close').click(function() {
         $('#menu-semanal-modal').modal('hide');
     });
-// Cambiar texto del botón según método de pago (productos)
-$('#formaPagoEfectivoProducto').on('change', function() {
-    $('#btnAccionProducto').text('Solicitar');
-});
+    $('#formaPagoEfectivoProducto').on('change', function() {
+        $('#btnAccionProducto').text('Solicitar');
+    });
 
-$('#formaPagoTransferenciaProducto').on('change', function() {
-    $('#btnAccionProducto').text('Comprar');
-});
+    $('#formaPagoTransferenciaProducto').on('change', function() {
+        $('#btnAccionProducto').text('Comprar');
+    });
+    $('#formProducto').on('submit', function(event) {
+        event.preventDefault();
 
-// Manejar el envío del formulario de producto
-// Manejar el envío del formulario de producto
-$('#formProducto').on('submit', function(event) {
-    event.preventDefault();
+        const nombreProducto = $('#modalProductName').text();
+        const cantidad = $('#cantidadProducto').val();
+        const precio = parseFloat($('#modalProductPrice').text().replace('$', ''));
+        const total = cantidad * precio;
 
-    const nombreProducto = $('#modalProductName').text();
-    const cantidad = $('#cantidadProducto').val();
-    const precio = parseFloat($('#modalProductPrice').text().replace('$', ''));
-    const total = cantidad * precio;
-
-    if ($('#formaPagoEfectivoProducto').is(':checked')) {
-        // Lógica para pago en efectivo
-        const datos = {
-            nombrePreventa: nombreProducto,
-            cantidad_orden: cantidad,
-            precioUnitarioPreventa: precio,
-            precioTotalPreventa: total,
-            metodoPago: 'efectivo'
-        };
-
-        // Mostrar indicador de carga
-        $('#efectivoProductoModal').fadeIn(300);
-        $('#loadingEfectivoProducto').show();
-        $('#mensajeExitoEfectivoProducto').hide();
-
-        // Simular un retraso de 3 segundos antes de enviar la solicitud
-        setTimeout(function() {
-            // Enviar datos al servidor
-            $.ajax({
-                url: 'guardar_preventa_producto.php',
-                method: 'POST',
-                data: datos,
-                success: function(response) {
-                    // Ocultar el indicador de carga
-                    $('#loadingEfectivoProducto').hide();
-
-                    // Mostrar el mensaje de éxito
-                    $('#mensajeExitoEfectivoProducto').show();
-
-                    // Ocultar el modal después de 2 segundos
-                    setTimeout(function() {
-                        $('#efectivoProductoModal').fadeOut(300);
-                        $('#productModal').fadeOut(300);
-                        location.reload();
-                    }, 2000);
-                },
-                error: function() {
-                    // Ocultar el indicador de carga en caso de error
-                    $('#loadingEfectivoProducto').hide();
-                    alert('Error al guardar la solicitud de producto');
-                    $('#efectivoProductoModal').fadeOut(300);
-                }
-            });
-        }, 3000);
-    } else if ($('#formaPagoTransferenciaProducto').is(':checked')) {
-        // Lógica para transferencia
-        $('#simulacionProductoModal').fadeIn(300);
-        $('#montoProducto').val(total.toFixed(2));
-
-        // Preparar el procesamiento de la transferencia
-        $('#formSimulacionProducto').off('submit').on('submit', function(e) {
-            e.preventDefault();
-
-            $('#loadingProducto').show();
-            $('#btnAceptarTransferenciaProducto').prop('disabled', true);
-
-            const fechaActual = new Date().toISOString().slice(0, 19).replace('T', ' ');
-
-            // Datos para la tabla pagos
-            const datosPago = {
-                nombrePagos: nombreProducto,
-                canTotalP: total,
-                fePago: fechaActual,
-                metodoPago: 'transferencia',
-                cantidad_orden: cantidad
+        if ($('#formaPagoEfectivoProducto').is(':checked')) {
+            // Lógica para pago en efectivo
+            const datos = {
+                nombrePreventa: nombreProducto,
+                cantidad_orden: cantidad,
+                precioUnitarioPreventa: precio,
+                precioTotalPreventa: total,
+                metodoPago: 'efectivo'
             };
 
-            // Simular procesamiento y enviar datos
-            setTimeout(function() {
-                $.ajax({
-                    url: 'guardar_pago_producto.php',
-                    method: 'POST',
-                    data: datosPago,
-                    success: function(response) {
-                        $('#loadingProducto').hide();
-                        $('#mensajeExitoProducto').show();
+            // Mostrar indicador de carga
+            $('#efectivoProductoModal').fadeIn(300);
+            $('#loadingEfectivoProducto').show();
+            $('#mensajeExitoEfectivoProducto').hide();
 
+            // Simular un retraso de 3 segundos antes de enviar la solicitud
+            setTimeout(function() {
+                // Enviar datos al servidor
+                $.ajax({
+                    url: 'guardar_preventa_producto.php',
+                    method: 'POST',
+                    data: datos,
+                    success: function(response) {
+                        // Ocultar el indicador de carga
+                        $('#loadingEfectivoProducto').hide();
+
+                        // Mostrar el mensaje de éxito
+                        $('#mensajeExitoEfectivoProducto').show();
+
+                        // Ocultar el modal después de 2 segundos
                         setTimeout(function() {
-                            $('#mensajeExitoProducto').hide();
-                            $('#simulacionProductoModal').fadeOut(300);
+                            $('#efectivoProductoModal').fadeOut(300);
                             $('#productModal').fadeOut(300);
-                            $('#btnAceptarTransferenciaProducto').prop('disabled', false);
                             location.reload();
                         }, 2000);
                     },
                     error: function() {
-                        $('#loadingProducto').hide();
-                        alert('Error al procesar el pago');
-                        $('#btnAceptarTransferenciaProducto').prop('disabled', false);
+                        // Ocultar el indicador de carga en caso de error
+                        $('#loadingEfectivoProducto').hide();
+                        alert('Error al guardar la solicitud de producto');
+                        $('#efectivoProductoModal').fadeOut(300);
                     }
                 });
-            }, 3000);
-        });
-    }
-});
+            }, 2000);
+        } else if ($('#formaPagoTransferenciaProducto').is(':checked')) {
+            // Lógica para transferencia
+            $('#simulacionProductoModal').fadeIn(300);
+            $('#montoProducto').val(total.toFixed(2));
+
+            // Preparar el procesamiento de la transferencia
+            $('#formSimulacionProducto').off('submit').on('submit', function(e) {
+                e.preventDefault();
+
+                $('#loadingProducto').show();
+                $('#btnAceptarTransferenciaProducto').prop('disabled', true);
+
+                const fechaActual = new Date().toISOString().slice(0, 19).replace('T', ' ');
+
+                // Datos para la tabla pagos
+                const datosPago = {
+                    nombrePagos: nombreProducto,
+                    canTotalP: total,
+                    fePago: fechaActual,
+                    metodoPago: 'transferencia',
+                    cantidad_orden: cantidad
+                };
+
+                // Simular procesamiento y enviar datos
+                setTimeout(function() {
+                    $.ajax({
+                        url: 'guardar_pago_producto.php',
+                        method: 'POST',
+                        data: datosPago,
+                        success: function(response) {
+                            $('#loadingProducto').hide();
+                            $('#mensajeExitoProducto').show();
+
+                            setTimeout(function() {
+                                $('#mensajeExitoProducto').hide();
+                                $('#simulacionProductoModal').fadeOut(300);
+                                $('#productModal').fadeOut(300);
+                                $('#btnAceptarTransferenciaProducto').prop('disabled', false);
+                                location.reload();
+                            }, 2000);
+                        },
+                        error: function() {
+                            $('#loadingProducto').hide();
+                            alert('Error al procesar el pago');
+                            $('#btnAceptarTransferenciaProducto').prop('disabled', false);
+                        }
+                    });
+                }, 3000);
+            });
+        }
+    });
+
     // Cambiar texto del botón según método de pago (desayunos)
     $('#formaPagoEfectivoDesayuno').on('change', function() {
         $('#btnAccionDesayuno').text('Solicitar');
@@ -1519,7 +1445,7 @@ $('#formProducto').on('submit', function(event) {
                         $('#efectivoDesayunoModal').fadeOut(300);
                     }
                 });
-            }, 3000);
+            }, 2000);
         } else if ($('#formaPagoTransferenciaDesayuno').is(':checked')) {
             // Lógica para transferencia
             $('#simulacionDesayunoModal').fadeIn(300);
@@ -1779,7 +1705,7 @@ $('#formProducto').on('submit', function(event) {
                         $('#efectivoAlmuerzoModal').fadeOut(300);
                     }
                 });
-            }, 3000); // Simular un retraso de 3 segundos para el procesamiento
+            }, 2000); // Simular un retraso de 3 segundos para el procesamiento
         } else if ($('#formaPagoTransferencia').is(':checked')) {
             // Lógica para transferencia (sin cambios)
             $('#simulacionAlmuerzoModal').fadeIn(300);
