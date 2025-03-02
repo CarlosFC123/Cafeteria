@@ -54,6 +54,7 @@ $productos = $stmt->fetchAll(PDO::FETCH_ASSOC);
     <title>Administración de Productos</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/boxicons@2.0.7/css/boxicons.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
     <style>
         
         .table-hover tbody tr:hover {
@@ -180,6 +181,8 @@ $productos = $stmt->fetchAll(PDO::FETCH_ASSOC);
     </style>
 </head>
 <body class="bg-light">
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered modal-confirm">
             <div class="modal-content">
@@ -316,30 +319,75 @@ $productos = $stmt->fetchAll(PDO::FETCH_ASSOC);
         }
 
         document.getElementById('btnConfirmDelete').addEventListener('click', function() {
-            if (productoIdAEliminar) {
+        if (productoIdAEliminar) {
+            // Función para enviar la solicitud de eliminación
+            function enviarSolicitudEliminar() {
                 var xhr = new XMLHttpRequest();
                 xhr.open("POST", "eliminar_producto.php", true);
                 xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
-                
+
                 xhr.onload = function() {
+                    console.log("Respuesta del servidor:", xhr.responseText); // Depuración
                     if (xhr.status == 200) {
-                        const row = document.getElementById('producto-' + productoIdAEliminar);
-                        row.style.transition = 'opacity 0.3s ease';
-                        row.style.opacity = '0';
-                        
-                        setTimeout(() => {
-                            row.remove();
-                        }, 300);
-                        
-                        deleteModal.hide();
+                        try {
+                            const response = JSON.parse(xhr.responseText);
+
+                            if (response.success) {
+                                // Eliminar la fila de la tabla
+                                const row = document.getElementById('producto-' + productoIdAEliminar);
+                                row.style.transition = 'opacity 0.3s ease';
+                                row.style.opacity = '0';
+
+                                setTimeout(() => {
+                                    row.remove();
+                                }, 300);
+
+                                deleteModal.hide();
+
+                                // Mostrar mensaje de éxito
+                                Swal.fire({
+                                    icon: 'success',
+                                    title: 'Producto eliminado',
+                                    text: 'El producto se ha eliminado correctamente.',
+                                    confirmButtonColor: '#3085d6',
+                                });
+                            } else {
+                                // Mostrar advertencia si el producto está en uso
+                                Swal.fire({
+                                    icon: 'warning',
+                                    title: 'No se puede eliminar',
+                                    text: response.message,
+                                    confirmButtonColor: '#3085d6',
+                                });
+                                deleteModal.hide(); // Cerrar el modal de confirmación
+                            }
+                        } catch (error) {
+                            console.error("Error al parsear la respuesta JSON:", error);
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Error',
+                                text: 'Hubo un error al procesar la respuesta del servidor.',
+                                confirmButtonColor: '#3085d6',
+                            });
+                        }
                     } else {
-                        alert("Hubo un error al intentar eliminar el producto.");
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Error',
+                            text: 'Hubo un error al intentar eliminar el producto.',
+                            confirmButtonColor: '#3085d6',
+                        });
                     }
                 };
-                
+
+                // Enviar la solicitud
                 xhr.send("id=" + productoIdAEliminar);
             }
-        });
+
+            // Enviar la solicitud de eliminación
+            enviarSolicitudEliminar();
+        }
+    });
     </script>
 </body>
 </html>

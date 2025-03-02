@@ -1,9 +1,5 @@
 <?php 
-// session_start(); 
-// if (!isset($_SESSION['usuario_id']) || $_SESSION['usuario_rol'] != 2) {
-//     header("Location: login.php");
-//     exit;
-// }
+
 include 'sidebar.php';
 require 'db_connection.php';
 
@@ -14,7 +10,10 @@ $inventario = $pdo->query("
         p.nbProducto,  -- Nombre del producto
         i.canActual,
         i.feActualizacion,
-        i.estado_inventario
+        CASE 
+            WHEN i.canActual > 0 THEN 'Disponible'
+            ELSE 'Agotado'
+        END AS estado_inventario
     FROM inventario i
     JOIN productos p ON i.idProducto = p.idProducto  -- JOIN con la tabla productos
     ORDER BY i.idInventario ASC

@@ -37,13 +37,28 @@ if ($result->num_rows > 0) {
     die("Producto no encontrado en el inventario.");
 }
 
+// Obtener la hora actual en formato de 12 horas con AM/PM
+$hora_compra_12h = date("h:i A");
+
+// Convertir la hora al formato de 24 horas
+$hora_compra = date("H:i:s", strtotime($hora_compra_12h));
+
+// Determinar el turno de venta
+if ($hora_compra >= '07:00:00' && $hora_compra <= '11:59:59') {
+    $turnoVentaP = 'Descanso 1';
+} elseif ($hora_compra >= '12:00:00' && $hora_compra <= '22:59:59') {
+    $turnoVentaP = 'Descanso 2';
+} else {
+    $turnoVentaP = 'Fuera de horario';
+}
+
 // Iniciar transacción
 $conn->begin_transaction();
 
 try {
     // Insertar en la tabla pagos
-    $sqlInsert = "INSERT INTO pagos (nombrePagos, canTotalP, fePago, metodoPago) 
-                  VALUES ('$nombrePagos', $canTotalP, '$fePago', '$metodoPago')";
+    $sqlInsert = "INSERT INTO pagos (nombrePagos, canTotalP, fePago, metodoPago, hora_compra, turnoVentaP) 
+                  VALUES ('$nombrePagos', $canTotalP, '$fePago', '$metodoPago', NOW(), '$turnoVentaP')";
     if (!$conn->query($sqlInsert)) {
         throw new Exception("Error al insertar en la tabla pagos: " . $conn->error);
     }

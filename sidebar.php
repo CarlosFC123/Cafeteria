@@ -245,7 +245,7 @@ $mensaje_bienvenida = "Bienvenido Administrador"; // Este mensaje puede ser dinÃ
         <a href="inventario.php">Inventario</a>
         <a href="#" class="submenu-toggle" onclick="toggleSubmenu(event)">Ganancias</a>
         <div class="submenu">
-            <a href="pagos.php">Pagos</a>
+            <a href="pagos.php">Pagos-ventas</a>
             <a href="preventa.php">Preventa</a>
             <a href="ganancias.php">Ganancias</a>
             <a href="corte_caja.php">Corte de Caja</a>

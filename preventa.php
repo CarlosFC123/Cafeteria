@@ -1,4 +1,4 @@
-<?php 
+<?php
 include 'sidebar.php';
 require 'db_connection.php';
 
@@ -10,7 +10,8 @@ $preventas = $pdo->query("
         precioUnitarioPreventa, 
         (cantidad_orden * precioUnitarioPreventa) AS precioTotalpreventa,
         metodoPago,
-        turnoVentaP
+        turnoVentaP,
+        estado_pv
     FROM preventa
     ORDER BY idPreventa ASC
 ")->fetchAll(PDO::FETCH_ASSOC);
@@ -24,7 +25,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['idPreventa'])) {
 
     try {
         // Obtener los datos de la preventa antes de eliminarla
-        $stmt = $pdo->prepare("SELECT nombrePreventa, cantidad_orden, tipoComida FROM preventa WHERE idPreventa = ?");
+        $stmt = $pdo->prepare("SELECT nombrePreventa, cantidad_orden, tipoComida, estado_pv FROM preventa WHERE idPreventa = ?");
         $stmt->execute([$idPreventa]);
         $preventa = $stmt->fetch(PDO::FETCH_ASSOC);
 
@@ -32,43 +33,47 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['idPreventa'])) {
             $nombrePreventa = $preventa['nombrePreventa'];
             $cantidad_orden = $preventa['cantidad_orden'];
             $tipoComida = $preventa['tipoComida'];
+            $estado_pv = $preventa['estado_pv'];
 
-            // Determinar el tipo de preventa y actualizar la cantidad correspondiente
-            if ($tipoComida === 'desayuno') {
-                // Es un desayuno: sumar cantidad_orden a cantidadDesayuno en la tabla desayuno
-                $stmt = $pdo->prepare("UPDATE desayuno SET cantidadDesayuno = cantidadDesayuno + ? WHERE nombreProducto = ?");
-                $stmt->execute([$cantidad_orden, $nombrePreventa]);
-            } elseif (strpos($tipoComida, 'almuerzo') !== false) {
-                // Es un almuerzo: determinar si es porción, media u orden
-                $columnaActualizar = '';
-                if ($tipoComida === 'almuerzo-porcion') {
-                    $columnaActualizar = 'cantidadPorcion';
-                } elseif ($tipoComida === 'almuerzo-media') {
-                    $columnaActualizar = 'cantidadMedia';
-                } elseif ($tipoComida === 'almuerzo-orden') {
-                    $columnaActualizar = 'cantidadOrden';
-                }
-
-                if ($columnaActualizar) {
-                    // Sumar cantidad_orden a la columna correspondiente en la tabla almuerzo
-                    $stmt = $pdo->prepare("UPDATE almuerzo SET $columnaActualizar = $columnaActualizar + ? WHERE nombreProducto = ?");
+            // Solo sumar la cantidad al stock si el estado no es "Completado"
+            if ($estado_pv !== 'Completado') {
+                // Determinar el tipo de preventa y actualizar la cantidad correspondiente
+                if ($tipoComida === 'desayuno') {
+                    // Es un desayuno: sumar cantidad_orden a cantidadDesayuno en la tabla desayuno
+                    $stmt = $pdo->prepare("UPDATE desayuno SET cantidadDesayuno = cantidadDesayuno + ? WHERE nombreProducto = ?");
                     $stmt->execute([$cantidad_orden, $nombrePreventa]);
-                }
-            } elseif ($tipoComida === 'producto') {
-                // Es un producto: sumar cantidad_orden a canActual en la tabla inventario
-                // Primero, obtener el idProducto basado en el nombre del producto
-                $stmt = $pdo->prepare("SELECT idProducto FROM productos WHERE nbProducto = ?");
-                $stmt->execute([$nombrePreventa]);
-                $producto = $stmt->fetch(PDO::FETCH_ASSOC);
+                } elseif (strpos($tipoComida, 'almuerzo') !== false) {
+                    // Es un almuerzo: determinar si es porción, media u orden
+                    $columnaActualizar = '';
+                    if ($tipoComida === 'almuerzo-porcion') {
+                        $columnaActualizar = 'cantidadPorcion';
+                    } elseif ($tipoComida === 'almuerzo-media') {
+                        $columnaActualizar = 'cantidadMedia';
+                    } elseif ($tipoComida === 'almuerzo-orden') {
+                        $columnaActualizar = 'cantidadOrden';
+                    }
 
-                if ($producto) {
-                    $idProducto = $producto['idProducto'];
+                    if ($columnaActualizar) {
+                        // Sumar cantidad_orden a la columna correspondiente en la tabla almuerzo
+                        $stmt = $pdo->prepare("UPDATE almuerzo SET $columnaActualizar = $columnaActualizar + ? WHERE nombreProducto = ?");
+                        $stmt->execute([$cantidad_orden, $nombrePreventa]);
+                    }
+                } elseif ($tipoComida === 'producto') {
+                    // Es un producto: sumar cantidad_orden a canActual en la tabla inventario
+                    // Primero, obtener el idProducto basado en el nombre del producto
+                    $stmt = $pdo->prepare("SELECT idProducto FROM productos WHERE nbProducto = ?");
+                    $stmt->execute([$nombrePreventa]);
+                    $producto = $stmt->fetch(PDO::FETCH_ASSOC);
 
-                    // Sumar cantidad_orden a canActual en la tabla inventario
-                    $stmt = $pdo->prepare("UPDATE inventario SET canActual = canActual + ? WHERE idProducto = ?");
-                    $stmt->execute([$cantidad_orden, $idProducto]);
-                } else {
-                    throw new Exception("Producto no encontrado en la tabla productos.");
+                    if ($producto) {
+                        $idProducto = $producto['idProducto'];
+
+                        // Sumar cantidad_orden a canActual en la tabla inventario
+                        $stmt = $pdo->prepare("UPDATE inventario SET canActual = canActual + ? WHERE idProducto = ?");
+                        $stmt->execute([$cantidad_orden, $idProducto]);
+                    } else {
+                        throw new Exception("Producto no encontrado en la tabla productos.");
+                    }
                 }
             }
 
@@ -133,6 +138,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['idPreventa'])) {
                             <th>Precio Unitario</th>
                             <th>Precio Total</th>
                             <th>Metodo de pago</th>
+                            <th>Estado</th>
                             <th>Acciones</th>
                         </tr>
                     </thead>
@@ -145,6 +151,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['idPreventa'])) {
                             <td>$<?php echo number_format($preventa['precioUnitarioPreventa'], 2); ?></td>
                             <td>$<?php echo number_format($preventa['precioTotalpreventa'], 2); ?></td>
                             <td><?php echo htmlspecialchars($preventa['metodoPago']); ?></td>
+                            <td>
+                                <form method="POST" action="actualizar_estado.php" style="display:inline;">
+                                    <input type="hidden" name="idPreventa" value="<?php echo $preventa['idPreventa']; ?>">
+                                    <select name="estado_pv" onchange="this.form.submit()" class="form-select form-select-sm">
+                                        <option value="Pendiente" <?php echo ($preventa['estado_pv'] === 'Pendiente') ? 'selected' : ''; ?>>Pendiente</option>
+                                        <option value="Completado" <?php echo ($preventa['estado_pv'] === 'Completado') ? 'selected' : ''; ?>>Completado</option>
+                                        <option value="Cancelado" <?php echo ($preventa['estado_pv'] === 'Cancelado') ? 'selected' : ''; ?>>Cancelado</option>
+                                    </select>
+                                </form>
+                            </td>
                             <td>
                                 <div class="action-buttons">
                                     <button class="btn btn-sm btn-outline-danger"

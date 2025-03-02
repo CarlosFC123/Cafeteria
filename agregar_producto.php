@@ -1,6 +1,7 @@
 <?php
 require 'db_connection.php';
 
+
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $nombreProducto = $_POST['nbProducto'];
     $descripcion = $_POST['desProducto'];
@@ -34,9 +35,14 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $idProducto = $pdo->lastInsertId();
 
             // Insertar en la tabla productos_proveedores
-            $stmtProveedores = $pdo->prepare("INSERT INTO productos_proveedores (idProducto, idProveedor, precio_unitario_compra, cantidadProducto, precioTotalCompra) VALUES (?, ?, ?, ?, ?)");
-            $stmtProveedores->execute([$idProducto, $idProveedor, $precio, NULL, NULL]);
+            $stmtProveedores = $pdo->prepare("INSERT INTO productos_proveedores (idProducto, idProveedor, precio_unitario_compra, cantidad_anterior, cantidadProducto, precioTotalCompra) VALUES (?, ?, ?, ?, ?, ?)");
+            $stmtProveedores->execute([$idProducto, $idProveedor, $precio, 0, 0, 0]); // Inicialmente, cantidad y precio total son 0
 
+            // Insertar en la tabla inventario
+           // Insertar en la tabla inventario con un valor inicial para canActual
+$canActualInicial = 0; // Puedes cambiar este valor según tus necesidades
+$stmtInventario = $pdo->prepare("INSERT INTO inventario (idProducto, canActual, feActualizacion, estado_inventario) VALUES (?, ?, NOW(), ?)");
+$stmtInventario->execute([$idProducto, $canActualInicial, ($canActualInicial <= 0 ? 'Agotado' : 'Disponible')]);
             // Redirigir a productos.php después de guardar
             header("Location: productos.php");
             exit;
