@@ -22,9 +22,12 @@ $precioTotalPreventa = $_POST['precioTotalPreventa'];
 $metodoPago = $_POST['metodoPago'];
 $tipoComida = $_POST['tipoComida']; // porcion, media, orden
 
+// Determinar el valor de tipoComida para la tabla preventa
+$tipoComidaPreventa = 'almuerzo-' . $tipoComida; // Ejemplo: almuerzo-porcion
+
 // Insertar los datos en la tabla preventa
-$sqlInsert = "INSERT INTO preventa (nombrePreventa, cantidad_orden, precioUnitarioPreventa, precioTotalPreventa, metodoPago)
-              VALUES ('$nombrePreventa', $cantidad_orden, $precioUnitarioPreventa, $precioTotalPreventa, '$metodoPago')";
+$sqlInsert = "INSERT INTO preventa (nombrePreventa, cantidad_orden, precioUnitarioPreventa, precioTotalPreventa, metodoPago, tipoComida)
+              VALUES ('$nombrePreventa', $cantidad_orden, $precioUnitarioPreventa, $precioTotalPreventa, '$metodoPago', '$tipoComidaPreventa')";
 
 if ($conn->query($sqlInsert) === TRUE) {
     // Determinar qué columna restar según el tipo de comida
@@ -42,8 +45,6 @@ if ($conn->query($sqlInsert) === TRUE) {
         default:
             die("Tipo de comida no válido.");
     }
-
-    
 
     // Actualizar la cantidad disponible en la tabla almuerzo
     $sqlUpdate = "UPDATE almuerzo 

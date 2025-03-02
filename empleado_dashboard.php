@@ -384,6 +384,43 @@ $almuerzos = $pdo->query("
             } 
         }
 
+        .modalUser {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0, 0, 0, 0.7);
+    backdrop-filter: blur(5px);
+}
+
+.modal-contentUser {
+    background-color: #fff;
+    margin: 5% auto;
+    padding: 20px;
+    border: 1px solid #888;
+    width: 90%;
+    max-width: 600px;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.close-modalUser {
+    color: #aaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.close-modalUser:focus {
+    color: #000;
+    text-decoration: none;
+}
+
 </style>
 </head>
 <body>
@@ -404,12 +441,12 @@ $almuerzos = $pdo->query("
                 </div>
                 <div class="container-user">
                     <div class="user-dropdown">
-                        <span class="user-name">
+                        <span class="user-name" id="user-name">
                             <?php echo $usuario_nombre . ' ' . $usuario_apellido; ?>
                         </span>
                         <i class="fa-solid fa-caret-down"></i>
                         <div class="dropdown-content">
-                            <a href="#">Mi perfil</a>
+                            <a href="#" id="miPerfil">Mi perfil</a>
                             <a href="logout.php">Cerrar sesión</a>
                         </div>
                     </div>
@@ -459,7 +496,7 @@ $almuerzos = $pdo->query("
         <div class="content-banner">
             <p>Utr</p>
             <h2>100%<br />Cardenales</h2>
-            <!-- <a href="#" style="color: black; font-weight: bold;">Crear Orden</a> -->
+            <a href="#" style="color: black; font-weight: bold;">Crear Orden</a>
         </div>
     </section>
     <main class="main-content">
@@ -516,6 +553,44 @@ $almuerzos = $pdo->query("
                 <?php endforeach; ?>
             </div>
         </section>
+
+        <!-- modal perfil -->
+        <div id="userProfileModal" class="modalUser">
+            <div class="modal-contentUser">
+                <span class="close-modalUser">&times;</span>
+                <h2>Editar mi Perfil</h2>
+                <div id="userProfileContent">
+                    <form id="userProfileForm">
+                        <div class="form-group">
+                            <label for="nombre">Nombre:</label>
+                            <input type="text" id="nombre" name="nombre" class="form-control">
+                        </div>
+                        <div class="form-group">
+                            <label for="apellido">Apellido:</label>
+                            <input type="text" id="apellido" name="apellido" class="form-control">
+                        </div>
+                        <div class="form-group">
+                            <label for="telefono">Teléfono:</label>
+                            <input type="text" id="telefono" name="telefono" class="form-control">
+                        </div>
+                        <div class="form-group">
+                            <label for="correo">Correo electrónico:</label>
+                            <input type="email" id="correo" name="correo" class="form-control">
+                        </div>
+                        <!-- Campos de contraseña -->
+                        <div class="form-group">
+                            <label for="nuevaContrasena">Nueva contraseña:</label>
+                            <input type="password" id="nuevaContrasena" name="nuevaContrasena" class="form-control">
+                        </div>
+                        <div class="form-group">
+                            <label for="confirmarContrasena">Confirmar nueva contraseña:</label>
+                            <input type="password" id="confirmarContrasena" name="confirmarContrasena" class="form-control">
+                        </div>
+                        <button type="submit" class="btn btn-primary">Guardar Cambios</button>
+                    </form>
+                </div>
+            </div>
+        </div>
 
         <section class="container breakfast-section" id="breakfast-section" style="display: none;">
             <div class="container-products" id="container-breakfasts">
@@ -1234,9 +1309,9 @@ $(document).ready(function() {
             $('#modalAlmuerzoPriceMedia').text(`${productCard.find('.price-list .price:eq(1)').text()}`);
             $('#modalAlmuerzoPriceOrden').text(`${productCard.find('.price-list .price:eq(2)').text()}`);
             $('#modalAlmuerzoDescription').text(productDescription);
-            $('#modalAlmuerzoCantidadPorcion').text(`${productQuantityPorcion} disponibles`);
-            $('#modalAlmuerzoCantidadMedia').text(`${productQuantityMedia} disponibles`);
-            $('#modalAlmuerzoCantidadOrden').text(`${productQuantityOrden} disponibles`);
+            $('#modalAlmuerzoCantidadPorcion').text(`Porcion: ${productQuantityPorcion} disponibles`);
+            $('#modalAlmuerzoCantidadMedia').text(`Media: ${productQuantityMedia} disponibles`);
+            $('#modalAlmuerzoCantidadOrden').text(`Orden: ${productQuantityOrden} disponibles`);
             $('#modalAlmuerzoEstadoInventario').text((productQuantityPorcion > 0 || productQuantityMedia > 0 || productQuantityOrden > 0) ? 'Disponible' : 'Agotado');
 
             // Mostrar el modal de almuerzos
@@ -1330,7 +1405,7 @@ $(document).ready(function() {
                         $('#efectivoProductoModal').fadeOut(300);
                     }
                 });
-            }, 2000);
+            }, 1000);
         } else if ($('#formaPagoTransferenciaProducto').is(':checked')) {
             // Lógica para transferencia
             $('#simulacionProductoModal').fadeIn(300);
@@ -1378,7 +1453,7 @@ $(document).ready(function() {
                             $('#btnAceptarTransferenciaProducto').prop('disabled', false);
                         }
                     });
-                }, 3000);
+                }, 2000);
             });
         }
     });
@@ -1791,6 +1866,102 @@ $(document).ready(function() {
             (porcion > 0 || media > 0 || orden > 0) ? 'Disponible' : 'Agotado'
         );
     }
+
+    $(document).ready(function() {
+    
+        $('#miPerfil').on('click', function(e) {
+            e.preventDefault();
+            cargarDatosUsuario(); // Llama a obtener_usuario.php
+            $('#userProfileModal').fadeIn(300);
+        });
+
+        // Cerrar el modal al hacer clic en la X
+        $('.close-modalUser').on('click', function() {
+            $('#userProfileModal').fadeOut(300);
+        });
+
+        // Cerrar el modal al hacer clic fuera de él
+        $(window).on('click', function(event) {
+            if (event.target === $('#userProfileModal')[0]) {
+                $('#userProfileModal').fadeOut(300);
+            }
+        });
+
+    
+        function cargarDatosUsuario() {
+            $.ajax({
+                url: 'obtener_usuario.php',
+                method: 'GET',
+                dataType: 'json',
+                success: function(data) {
+                    if (data.success) {
+                        const usuario = data.usuario;
+                        $('#nombre').val(usuario.nbUsuario);
+                        $('#apellido').val(usuario.apellidoUsuario);
+                        $('#telefono').val(usuario.numTelefonoU);
+                        $('#correo').val(usuario.email);
+                    } else {
+                        alert(data.message || 'Error al cargar los datos del usuario.');
+                    }
+                },
+                error: function(xhr, status, error) {
+                    console.error("Error en la solicitud AJAX:", error);
+                    alert('Error al cargar los datos del usuario.');
+                }
+            });
+        }
+
+    
+        $('#userProfileForm').on('submit', function(e) {
+            e.preventDefault();
+
+            const nuevaContrasena = $('#nuevaContrasena').val();
+            const confirmarContrasena = $('#confirmarContrasena').val();
+
+            if (nuevaContrasena !== confirmarContrasena) {
+                alert('Las contraseñas no coinciden.');
+                return;
+            }
+
+            const datos = {
+                nombre: $('#nombre').val(),
+                apellido: $('#apellido').val(),
+                telefono: $('#telefono').val(),
+                correo: $('#correo').val(),
+                nuevaContrasena: nuevaContrasena
+            };
+
+            console.log("Datos enviados:", datos); // Depuración
+
+            $.ajax({
+                url: 'actualizar_usuario.php',
+                method: 'POST',
+                data: datos,
+                success: function(response) {
+                    // Asegurarse de que la respuesta sea un objeto JSON
+                    const jsonResponse = typeof response === "string" ? JSON.parse(response) : response;
+                    
+                    console.log("Respuesta del servidor:", jsonResponse); // Depuración
+                    if (jsonResponse.success) {
+                        console.log("Éxito en la actualización de datos.");
+                        alert('Datos actualizados correctamente.');
+                        $('#userProfileModal').fadeOut(300);
+
+                        // Actualizar el nombre de usuario en la interfaz
+                        $('#user-name').text(datos.nombre + ' ' + datos.apellido);
+                    } else {
+                        console.error("Error en la actualización de datos:", jsonResponse.message);
+                        alert(jsonResponse.message || 'Error al actualizar los datos del usuario.');
+                    }
+                },
+                error: function(xhr, status, error) {
+                    console.error("Error en la solicitud AJAX:", error);
+                    console.error("Detalles del error:", xhr.responseText);
+                    alert('Error al actualizar los datos del usuario. Detalles: ' + xhr.responseText);
+                }
+            });
+        });
+    });
 });
 </script>
 </body>

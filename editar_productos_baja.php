@@ -1,5 +1,4 @@
 <?php
-
 require 'db_connection.php';
 
 // Obtener el id del producto de baja
@@ -8,7 +7,7 @@ $producto_baja = null;
 
 if ($idProductoBaja) {
     // Consulta para obtener el producto de baja
-    $stmt = $pdo->prepare("SELECT pb.idProductoBaja, pb.idProducto, p.nbProducto AS nombreProducto, pb.feBaja, pb.desProducto, pb.cantidad_baja
+    $stmt = $pdo->prepare("SELECT pb.idProductoBaja, pb.idProducto, p.nbProducto AS nombreProducto, pb.feBaja, pb.desProducto, pb.cantidad_baja, pb.cantidadProducto, pb.TotalCantidadP
                            FROM productos_baja pb
                            JOIN productos p ON pb.idProducto = p.idProducto
                            WHERE pb.idProductoBaja = :idProductoBaja");
@@ -20,8 +19,10 @@ if ($idProductoBaja) {
         exit;
     }
 }
+
 $stmtProductos = $pdo->query("SELECT idProducto, nbProducto FROM productos");
 $productos = $stmtProductos->fetchAll(PDO::FETCH_ASSOC);
+
 // Manejo del formulario
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $idProductoBaja = $_POST['idProductoBaja'];
@@ -31,9 +32,23 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $cantidad_baja = $_POST['cantidad_baja'];
 
     // Validar que los campos no estén vacíos
-    if (empty($idProducto) || empty($feBaja) || empty($desProducto)) {
+    if (empty($idProducto) || empty($feBaja) || empty($desProducto) || empty($cantidad_baja)) {
         echo "<script>alert('Todos los campos son obligatorios.');</script>";
     } else {
+        // Obtener la cantidad_baja anterior
+        $stmt = $pdo->prepare("SELECT cantidad_baja FROM productos_baja WHERE idProductoBaja = :idProductoBaja");
+        $stmt->execute(['idProductoBaja' => $idProductoBaja]);
+        $cantidad_baja_anterior = $stmt->fetchColumn();
+
+        // Calcular la diferencia entre la cantidad_baja nueva y la anterior
+        $diferencia = $cantidad_baja - $cantidad_baja_anterior;
+
+        // Actualizar el inventario
+        if ($diferencia != 0) {
+            $stmt = $pdo->prepare("UPDATE inventario SET canActual = canActual - :diferencia WHERE idProducto = :idProducto");
+            $stmt->execute(['diferencia' => $diferencia, 'idProducto' => $idProducto]);
+        }
+
         // Actualizar el producto de baja
         $stmt = $pdo->prepare("UPDATE productos_baja
                                SET idProducto = :idProducto, feBaja = :feBaja, desProducto = :desProducto, cantidad_baja = :cantidad_baja
@@ -91,18 +106,18 @@ include 'sidebar.php';
                 <input type="hidden" name="idProductoBaja" value="<?php echo htmlspecialchars($producto_baja['idProductoBaja']); ?>">
 
                 <div class="row">
-                <div class="col-md-6 mb-4">
-                    <label for="idProducto" class="form-label">Nombre Producto</label>
-                    <select class="form-select" id="idProducto" name="idProducto" required>
-                        <option value="">-- Seleccionar Producto --</option>
-                        <?php foreach ($productos as $producto): ?>
-                            <option value="<?php echo htmlspecialchars($producto['idProducto']); ?>" 
-                                <?php echo ($producto['idProducto'] == $producto_baja['idProducto']) ? 'selected' : ''; ?>>
-                                <?php echo htmlspecialchars($producto['nbProducto']); ?>
-                            </option>
-                        <?php endforeach; ?>
-                    </select>
-                </div>
+                    <div class="col-md-6 mb-4">
+                        <label for="idProducto" class="form-label">Nombre Producto</label>
+                        <select class="form-select" id="idProducto" name="idProducto" required>
+                            <option value="">-- Seleccionar Producto --</option>
+                            <?php foreach ($productos as $producto): ?>
+                                <option value="<?php echo htmlspecialchars($producto['idProducto']); ?>" 
+                                    <?php echo ($producto['idProducto'] == $producto_baja['idProducto']) ? 'selected' : ''; ?>>
+                                    <?php echo htmlspecialchars($producto['nbProducto']); ?>
+                                </option>
+                            <?php endforeach; ?>
+                        </select>
+                    </div>
 
                     <div class="col-md-6 mb-4">
                         <label for="feBaja" class="form-label">Fecha Baja</label>

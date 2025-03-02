@@ -1,5 +1,5 @@
-<?php 
-// session_start(); 
+<?php
+// session_start();
 // if (!isset($_SESSION['usuario_id']) || $_SESSION['usuario_rol'] != 2) {
 //     header("Location: login.php");
 //     exit;
@@ -7,7 +7,8 @@
 include 'sidebar.php';
 require 'db_connection.php';
 
-$productos_baja = $pdo->query(" 
+// Obtener productos dados de baja
+$productos_baja = $pdo->query("
     SELECT 
         pb.idProductoBaja,
         pb.idProducto,
@@ -16,19 +17,36 @@ $productos_baja = $pdo->query("
         pb.desProducto,
         pb.cantidad_baja,
         pb.cantidadProducto, 
-        pb.TotalCantidadP  -- Seleccionar la columna calculada
+        pb.TotalCantidadP  
     FROM productos_baja pb
     JOIN productos p ON pb.idProducto = p.idProducto
     ORDER BY pb.idProductoBaja ASC
 ")->fetchAll(PDO::FETCH_ASSOC);
 
-// Handle delete request
+// Manejar la solicitud de eliminación
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['idProductoBaja'])) {
     $idProductoBaja = $_POST['idProductoBaja'];
-    $stmt = $pdo->prepare("DELETE FROM productos_baja WHERE idProductoBaja = ?");
+
+    // Obtener la cantidad_baja y el idProducto del producto dado de baja
+    $stmt = $pdo->prepare("SELECT idProducto, cantidad_baja FROM productos_baja WHERE idProductoBaja = ?");
     $stmt->execute([$idProductoBaja]);
-    echo "<script>window.location.href='productos_baja.php';</script>";
-    exit;
+    $producto_baja = $stmt->fetch(PDO::FETCH_ASSOC);
+
+    if ($producto_baja) {
+        $idProducto = $producto_baja['idProducto'];
+        $cantidad_baja = $producto_baja['cantidad_baja'];
+
+        // Sumar la cantidad_baja de nuevo a canActual en la tabla inventario
+        $stmt = $pdo->prepare("UPDATE inventario SET canActual = canActual + ? WHERE idProducto = ?");
+        $stmt->execute([$cantidad_baja, $idProducto]);
+
+        // Eliminar el registro de productos_baja
+        $stmt = $pdo->prepare("DELETE FROM productos_baja WHERE idProductoBaja = ?");
+        $stmt->execute([$idProductoBaja]);
+
+        echo "<script>window.location.href='productos_baja.php';</script>";
+        exit;
+    }
 }
 ?>
 
@@ -79,7 +97,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['idProductoBaja'])) {
                             <th>Descripción Producto</th>
                             <th>Cantidad Producto antes</th>
                             <th>Cantidad Baja</th>
-                            <th>Total Cantidad</th> <!-- Nueva columna -->
+                            <th>Total Cantidad</th>
                             <th>Acciones</th>
                         </tr>
                     </thead>
@@ -90,9 +108,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['idProductoBaja'])) {
                             <td><?php echo htmlspecialchars($producto['nbProducto']); ?></td>
                             <td><?php echo htmlspecialchars($producto['feBaja']); ?></td>
                             <td><?php echo htmlspecialchars($producto['desProducto']); ?></td>
-                            <td><?php echo htmlspecialchars($producto['cantidadProducto']); ?></td> 
+                            <td><?php echo htmlspecialchars($producto['cantidadProducto']); ?></td>
                             <td><?php echo htmlspecialchars($producto['cantidad_baja']); ?></td>
-                            <td><?php echo htmlspecialchars($producto['TotalCantidadP']); ?></td> <!-- Nueva columna -->
+                            <td><?php echo htmlspecialchars($producto['TotalCantidadP']); ?></td>
                             <td>
                                 <div class="action-buttons">
                                     <button class="btn btn-sm btn-outline-primary me-1" 

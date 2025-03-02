@@ -20,8 +20,8 @@ $precioTotalPreventa = $_POST['precioTotalPreventa'];
 $metodoPago = $_POST['metodoPago'];
 
 // Insertar los datos en la tabla preventa
-$sqlInsert = "INSERT INTO preventa (nombrePreventa, cantidad_orden, precioUnitarioPreventa, precioTotalPreventa, metodoPago)
-              VALUES ('$nombrePreventa', $cantidad_orden, $precioUnitarioPreventa, $precioTotalPreventa, '$metodoPago')";
+$sqlInsert = "INSERT INTO preventa (nombrePreventa, cantidad_orden, precioUnitarioPreventa, precioTotalPreventa, metodoPago, tipoComida)
+              VALUES ('$nombrePreventa', $cantidad_orden, $precioUnitarioPreventa, $precioTotalPreventa, '$metodoPago', 'desayuno')";
 
 if ($conn->query($sqlInsert) === TRUE) {
     // Actualizar la cantidad disponible en la tabla desayuno

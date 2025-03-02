@@ -88,10 +88,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['idPagos'])) {
                             <td><?php echo htmlspecialchars($pago['metodoPago']); ?></td>
                             <td>
                                 <div class="action-buttons">
-                                    <button class="btn btn-sm btn-outline-primary me-1" 
-                                            onclick="editarPago(<?php echo $pago['idPagos']; ?>)">
-                                        <i class='bx bx-edit-alt'></i> Editar
-                                    </button>
+                                    
                                     <button class="btn btn-sm btn-outline-danger"
                                             onclick="confirmarEliminar(<?php echo $pago['idPagos']; ?>)">
                                         <i class='bx bx-trash'></i> Eliminar

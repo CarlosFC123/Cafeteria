@@ -42,8 +42,8 @@ $conn->begin_transaction();
 
 try {
     // Insertar en la tabla preventa
-    $sqlInsert = "INSERT INTO preventa (nombrePreventa, cantidad_orden, precioUnitarioPreventa, precioTotalPreventa, metodoPago)
-                  VALUES ('$nombrePreventa', $cantidad_orden, $precioUnitarioPreventa, $precioTotalPreventa, '$metodoPago')";
+    $sqlInsert = "INSERT INTO preventa (nombrePreventa, cantidad_orden, precioUnitarioPreventa, precioTotalPreventa, metodoPago, tipoComida)
+                  VALUES ('$nombrePreventa', $cantidad_orden, $precioUnitarioPreventa, $precioTotalPreventa, '$metodoPago', 'producto')";
     if (!$conn->query($sqlInsert)) {
         throw new Exception("Error al insertar en la tabla preventa: " . $conn->error);
     }

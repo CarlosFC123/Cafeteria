@@ -62,13 +62,9 @@ if (isset($_GET['idProveedor']) && isset($_GET['idProducto'])) {
                     <input type="hidden" name="idProducto" value="<?php echo htmlspecialchars($producto_proveedor['idProducto']); ?>">
 
                     <div class="row">
+                        
                         <div class="col-md-6 mb-4">
-                            <label for="precio_unitario_compra" class="form-label">Precio Unitario Compra</label>
-                            <input type="text" class="form-control" id="precio_unitario_compra" name="precio_unitario_compra" value="<?php echo htmlspecialchars($producto_proveedor['precio_unitario_compra']); ?>" required>
-                        </div>
-
-                        <div class="col-md-6 mb-4">
-                            <label for="cantidadProducto" class="form-label">Cantidad Producto</label>
+                            <label for="cantidadProducto" class="form-label">Cantidad Producto antes</label>
                             <input type="text" class="form-control" id="cantidadProducto" name="cantidadProducto" value="<?php echo htmlspecialchars($producto_proveedor['cantidadProducto']); ?>" required>
                         </div>
                     </div>

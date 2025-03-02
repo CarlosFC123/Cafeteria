@@ -15,19 +15,50 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $feBaja = $_POST['feBaja'] ?? null;
 
     if ($idProducto && $cantidadBaja && $desProducto && $feBaja) {
-        $stmt = $pdo->prepare("
-            INSERT INTO productos_baja (idProducto, cantidad_baja, desProducto, feBaja)
-            VALUES (:idProducto, :cantidad_baja, :desProducto, :feBaja)
-        ");
-        $stmt->execute([
-            ':idProducto' => $idProducto,
-            ':cantidad_baja' => $cantidadBaja,
-            ':desProducto' => $desProducto,
-            ':feBaja' => $feBaja,
-        ]);
+        try {
+            // Iniciar una transacción
+            $pdo->beginTransaction();
 
-        header("Location: productos_baja.php?success=1");
-        exit;
+            // Obtener la cantidad actual del producto en el inventario
+            $stmt = $pdo->prepare("SELECT canActual FROM inventario WHERE idProducto = :idProducto");
+            $stmt->execute([':idProducto' => $idProducto]);
+            $inventario = $stmt->fetch(PDO::FETCH_ASSOC);
+
+            if (!$inventario || $inventario['canActual'] < $cantidadBaja) {
+                throw new Exception("No hay suficiente stock para dar de baja.");
+            }
+
+            // Calcular la nueva cantidad en el inventario
+            $nuevaCantidad = $inventario['canActual'] - $cantidadBaja;
+
+            // Actualizar el inventario
+            $stmt = $pdo->prepare("UPDATE inventario SET canActual = :nuevaCantidad WHERE idProducto = :idProducto");
+            $stmt->execute([':nuevaCantidad' => $nuevaCantidad, ':idProducto' => $idProducto]);
+
+            // Insertar el registro en productos_baja
+            $stmt = $pdo->prepare("
+                INSERT INTO productos_baja (idProducto, cantidad_baja, desProducto, feBaja, cantidadProducto, TotalCantidadP)
+                VALUES (:idProducto, :cantidad_baja, :desProducto, :feBaja, :cantidadProducto, :TotalCantidadP)
+            ");
+            $stmt->execute([
+                ':idProducto' => $idProducto,
+                ':cantidad_baja' => $cantidadBaja,
+                ':desProducto' => $desProducto,
+                ':feBaja' => $feBaja,
+                ':cantidadProducto' => $inventario['canActual'], // Cantidad antes de la baja
+                ':TotalCantidadP' => $nuevaCantidad, // Cantidad después de la baja
+            ]);
+
+            // Confirmar la transacción
+            $pdo->commit();
+
+            header("Location: productos_baja.php?success=1");
+            exit;
+        } catch (Exception $e) {
+            // Revertir la transacción en caso de error
+            $pdo->rollBack();
+            $error = $e->getMessage();
+        }
     } else {
         $error = "Por favor, completa todos los campos.";
     }
@@ -75,15 +106,15 @@ include 'sidebar.php';
                     <input type="number" name="cantidad_baja" id="cantidad_baja" class="form-control" required min="1">
                 </div>
 
-                <div class="col-md-6 mb-4">
-                        <label for="desProducto" class="form-label">Descripción</label>
-                        <select class="form-select" id="desProducto" name="desProducto" required>
-                            <option value="">-- Seleccionar Descripción --</option>
-                            <option value="Caducidad">Caducidad</option>
-                            <option value="Daño">Daño</option>
-                            <option value="Otros">Otros</option>
-                        </select>
-                    </div>
+                <div class="mb-3">
+                    <label for="desProducto" class="form-label">Descripción</label>
+                    <select class="form-select" id="desProducto" name="desProducto" required>
+                        <option value="">-- Seleccionar Descripción --</option>
+                        <option value="Caducidad">Caducidad</option>
+                        <option value="Daño">Daño</option>
+                        <option value="Otros">Otros</option>
+                    </select>
+                </div>
 
                 <div class="mb-3">
                     <label for="feBaja" class="form-label">Fecha de Baja</label>
