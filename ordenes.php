@@ -10,8 +10,6 @@ require 'db_connection.php';
 $ordenes = $pdo->query(" 
     SELECT 
         idOrden,
-        idUsuario,
-        idHorario,
         feOrden,
         estado_orden,
         precioTotalOrdenes,
@@ -69,8 +67,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['idOrden'])) {
                     <thead>
                         <tr>
                             <th>ID Orden</th>
-                            <th>ID Usuario</th>
-                            <th>ID Horario</th>
+                            <!-- <th>ID Usuario</th> -->
                             <th>Fecha de Orden</th>
                             <th>Estado de Orden</th>
                             <th>Precio Total</th>

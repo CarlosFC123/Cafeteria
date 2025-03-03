@@ -100,22 +100,20 @@ $almuerzos = $pdo->query("
 
     <style>
         
-        /* Estilos comunes para todos los modales */
-        .modal {
-            display: none; /* Oculta el modal por defecto */
-            position: fixed; /* Fija el modal en la pantalla */
-            z-index: 1000; /* Asegura que esté por encima de otros elementos */
+        /* .modal {
+            display: none; 
+            position: fixed; 
+            z-index: 1000; 
             left: 0;
             top: 0;
             width: 100%;
             height: 100%;
-            overflow: auto; /* Permite el desplazamiento si el contenido es muy largo */
-            background-color: rgba(0, 0, 0, 0.7); /* Fondo oscuro semitransparente */
-            backdrop-filter: blur(5px); /* Efecto de desenfoque */
-            transition: all 0.3s ease; /* Transición suave */
-        }
+            overflow: auto;
+            background-color: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(5px); 
+            transition: all 0.3s ease; 
+        } */
 
-        /* Estilos para el contenido del modal */
         .modal-content {
             background-color: #fff; /* Fondo blanco */
             margin: 5% auto; /* Centra el modal vertical y horizontalmente */
@@ -130,7 +128,6 @@ $almuerzos = $pdo->query("
             position: relative; /* Asegura que el contenido no se mueva */
         }
 
-        /* Animación de aparición del modal */
         @keyframes modalFadeIn {
             from {
                 opacity: 0;
@@ -142,7 +139,6 @@ $almuerzos = $pdo->query("
             }
         }
 
-        /* Estilos específicos para cada modal */
         #productModal.modal,
         #desayunoModal.modal,
         #almuerzoModal.modal {
@@ -158,8 +154,6 @@ $almuerzos = $pdo->query("
             backdrop-filter: blur(5px); /* Efecto de desenfoque */
             transition: all 0.3s ease; /* Transición suave */
         }
-
-        /* Estilos para las tarjetas de productos */
         .card-product {
             width: 100%;
             max-width: 300px;
@@ -305,11 +299,14 @@ $almuerzos = $pdo->query("
         .content-card-product {
             width: 100%;
             padding: 10px;
+            
         }
         
-        h3 {
+        .content-card-product h3 {
+            
+            margin-bottom: 10px;
             font-size: 16px;
-            margin: 10px 0;
+            font-weight: 500;
         }
         .price-container {
             display: flex;
@@ -383,44 +380,243 @@ $almuerzos = $pdo->query("
                 display: none; 
             } 
         }
-
         .modalUser {
-    display: none;
-    position: fixed;
-    z-index: 1000;
-    left: 0;
-    top: 0;
-    width: 100%;
-    height: 100%;
-    overflow: auto;
-    background-color: rgba(0, 0, 0, 0.7);
-    backdrop-filter: blur(5px);
-}
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(5px);
+        }
+        .modal-contentUser {
+            background-color: #fff;
+            margin: 5% auto;
+            padding: 20px;
+            border: 1px solid #888;
+            width: 90%;
+            max-width: 600px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+        .close-modalUser {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        .close-modalUser:focus {
+            color: #000;
+            text-decoration: none;
+        }
+        .cart-panel {
+            position: fixed;
+            top: 0;
+            right: -800px; 
+            width: 800px;
+            height: 100%;
+            background-color: #fff;
+            box-shadow: -2px 0 5px rgba(0, 0, 0, 0.2);
+            transition: right 0.3s ease-in-out;
+            z-index: 1000;
+            padding: 20px;
+            overflow-y: auto;
+        }
+        .cart-panel.open {
+            right: 0;
+        }
+        .close-cart-panel {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            font-size: 24px;
+            cursor: pointer;
+        }
+        .cart-tabs {
+            display: flex;
+            justify-content: space-around;
+            margin-bottom: 20px;
+            flex-wrap: wrap; /* Permite que las pestañas se ajusten en pantallas pequeñas */
+        }
+        .tab-button {
+            background: none;
+            border: none;
+            padding: 10px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: color 0.3s ease-in-out;
+        }
+        .tab-button.active {
+            border-bottom: 2px solid black;
+            font-weight: bold;
+        }
+        .tab-content {
+            display: none;
+        }
+        .tab-content.active {
+            display: block;
+        }
+        @media (max-width: 1024px) {
+            .cart-panel {
+                width: 60%; 
+                right: -60%; 
+            }
+            
+            .cart-panel.open {
+                right: 0;
+            }
 
-.modal-contentUser {
-    background-color: #fff;
-    margin: 5% auto;
-    padding: 20px;
-    border: 1px solid #888;
-    width: 90%;
-    max-width: 600px;
-    border-radius: 10px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-}
+            .tab-button {
+                font-size: 14px;
+                padding: 8px;
+            }
+        }
+        @media (max-width: 768px) {
+            .cart-panel {
+                width: 100%; /* Ocupa todo el ancho en móviles */
+                right: -100%; /* Ocultar inicialmente */
+            }
 
-.close-modalUser {
-    color: #aaa;
-    float: right;
-    font-size: 28px;
-    font-weight: bold;
-    cursor: pointer;
-}
+            .cart-panel.open {
+                right: 0;
+            }
 
-.close-modalUser:focus {
-    color: #000;
-    text-decoration: none;
-}
+            .cart-tabs {
+                flex-direction: column; /* Las pestañas se apilan en móviles */
+                align-items: center;
+            }
 
+            .tab-button {
+                width: 100%; /* Botones ocupan todo el ancho */
+                padding: 12px;
+                font-size: 18px;
+            }
+        }
+        
+      /* Estilos para la sección de productos y buscador */
+        .container.top-products {
+        position: relative;
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        padding: 15px 0;
+        }
+
+        .heading-1 {
+        width: 100%;
+        margin-bottom: 15px;
+        font-size: 24px;
+        color: #333;
+        }
+
+        .container-options {
+        width: 70%;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        margin-bottom: 15px;
+        }
+
+        .filter-option {
+        padding: 8px 16px;
+        background-color: #f5f5f5;
+        border-radius: 20px;
+        font-size: 14px;
+        color: #555;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        }
+
+        .filter-option:hover {
+        background-color: #e0e0e0;
+        color: #333;
+        }
+
+        .filter-option.active {
+        background-color: #d2a679;
+        color: white;
+        }
+
+/* Estilos del buscador */
+        .search-form {
+        position: absolute;
+        right: 0;
+        top: 50px;
+        width: 280px;
+        padding: 0;
+        transition: width 0.3s ease;
+        }
+
+        #searchInput {
+        width: 100%;
+        padding: 10px 40px 10px 15px;
+        
+        border-radius: 25px;
+        font-size: 14px;
+        color: #555;
+        background-color: #fff;
+        transition: all 0.3s ease;
+        }
+
+        #searchInput:focus {
+        box-shadow: 0 0 8px rgba(210, 166, 121, 0.4);
+        outline: none;
+        width: 100%;
+        }
+
+        #btn-search {
+        margin-left: -70px;
+        border: none;
+        background-color: transparent;
+        color: #d2a679;
+        }
+
+        
+
+        /* Estilo específico para el icono de búsqueda */
+        #btn-search i {
+        font-size: 20px;
+        transition: transform 0.3s ease;
+        }
+
+        #btn-search:hover i {
+        transform: scale(1.2);
+        }
+
+        .btn-clear {
+        position: absolute;
+        right: 10px;
+        top: 50%;
+        transform: translateY(-50%);
+        background-color: transparent;
+        color: #999;
+        border: none;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        }
+
+        .btn-clear:hover {
+        color: #555;
+        }
+
+        /* Media queries para responsive */
+        @media (max-width: 768px) {
+        .container-options {
+            width: 100%;
+        }
+        
+        .search-form {
+            position: relative;
+            width: 100%;
+            right: auto;
+            top: auto;
+            margin-top: 15px;
+        }
+        }
 </style>
 </head>
 <body>
@@ -457,6 +653,30 @@ $almuerzos = $pdo->query("
                     </div>
                     <span class="cart-text">Carrito</span>
                     </button>
+
+                    <div id="cartPanel" class="cart-panel">
+                        <span class="close-cart-panel">&times;</span>
+                        <h2>Carrito</h2>
+                        <div class="cart-tabs">
+                            <button class="tab-button active" data-tab="compras">Compras</button>
+                            <button class="tab-button" data-tab="solicitudes">Solicitudes</button>
+                            <!-- <button class="tab-button" data-tab="ordenes">Órdenes</button> -->
+                        </div>
+                        <div class="cart-content">
+                            <div id="compras" class="tab-content active">
+                                <!-- Contenido de compras (pagos) -->
+                                <div id="compras-list"></div>
+                            </div>
+                            <div id="solicitudes" class="tab-content">
+                                <!-- Contenido de solicitudes (preventa) -->
+                                <div id="solicitudes-list"></div>
+                            </div>
+                            <!-- <div id="ordenes" class="tab-content">
+                                 Contenido de órdenes (ordenes) 
+                                <div id="ordenes-list"></div>
+                            </div> -->
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -467,12 +687,7 @@ $almuerzos = $pdo->query("
                     <li><a href="#">Inicio</a></li>
                     <li><a id="menu-semanal-btn">Menú semanal</a></li>
                 </ul>
-                <!-- <form class="search-form">
-                    <input type="search" id="searchInput" placeholder="Buscar..." oninput="filtrarProductos()" />
-                    <button type="button" class="btn-search" id="btn-search">
-                        <i class="fa-solid fa-magnifying-glass"></i>
-                    </button>
-                </form> -->
+                
             </nav>
         </div>
         <div id="menu-semanal-modal" class="modal fade" tabindex="-1" role="dialog" aria-hidden="true">
@@ -496,7 +711,11 @@ $almuerzos = $pdo->query("
         <div class="content-banner">
             <p>Utr</p>
             <h2>100%<br />Cardenales</h2>
-            <a href="#" style="color: black; font-weight: bold;">Crear Orden</a>
+            <!-- <div id="botones-orden">
+                <a href="#" id="crear-orden" style="color: black; font-weight: bold;">Crear Orden</a>
+                <a href="#" id="guardar-orden" style="color: black; font-weight: bold; display: none;">Guardar Orden</a>
+                <a href="#" id="cancelar-orden" style="color: black; font-weight: bold; display: none;">Cancelar</a>
+            </div> -->
         </div>
     </section>
     <main class="main-content">
@@ -526,10 +745,19 @@ $almuerzos = $pdo->query("
             <h1 class="heading-1">-</h1>
             <div class="container-options">
                 <span class="filter-option btn-todo">Todos</span>
-                <span class="filter-option btn-todo-desayuno" data-filter="todo-desayuno" id="show-all-breakfasts">Todos los Desayunos</span> 
-                <span class="filter-option btn-todo-almuerzo" data-filter="todo-almuerzo" id="show-all-almuerzos">Todos los Almuerzos</span> 
-                <span class="filter-option btn-todo-producto" data-filter="todo" id="show-all-products">Todos los Productos</span> 
+                <span class="filter-option btn-todo-desayuno" data-filter="todo-desayuno" id="show-all-breakfasts">Todos los Desayunos</span>
+                <span class="filter-option btn-todo-almuerzo" data-filter="todo-almuerzo" id="show-all-almuerzos">Todos los Almuerzos</span>
+                <span class="filter-option btn-todo-producto" data-filter="todo" id="show-all-products">Todos los Productos</span>
             </div>
+            <form class="search-form">
+                <input type="search" id="searchInput" placeholder="Buscar..." oninput="filtrarProductos()" />
+                <button type="button" id="btn-search">
+                    <i class="fa-solid fa-magnifying-glass"></i>
+                </button>
+                <button type="button" class="btn-clear" id="btn-clear" onclick="clearSearch()">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </form>
         </section>
         <section class="container products-section" id="products-section">
             <div class="container-products">
@@ -649,6 +877,8 @@ $almuerzos = $pdo->query("
             <?php endforeach; ?>
             </div>
         </section>
+
+        
         <section class="gallery">
             <img src="img/2.jpeg" alt="Gallery Img1" class="gallery-img-1" />
             <img src="img/3.jpeg" alt="Gallery Img2" class="gallery-img-2" />
@@ -718,6 +948,7 @@ $almuerzos = $pdo->query("
                         <button type="submit" id="btnAccionProducto" class="btn btn-primary w-100" style="background-color: #2a9d8f; border: none; border-radius: 10px; padding: 1rem;">
                             Solicitar
                         </button>
+                        
                     </form>
                 </div>
             </div>
@@ -1069,9 +1300,12 @@ $almuerzos = $pdo->query("
 src="https://kit.fontawesome.com/81581fb069.js"
     crossorigin="anonymous"
 </script>
+<!-- Incluir SweetAlert2 desde un CDN -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
 
 $(document).ready(function() {
+    
     // Mostrar secciones iniciales
     $('#products-section, #breakfast-section, #almuerzo-section').show();
 
@@ -1325,7 +1559,147 @@ $(document).ready(function() {
             $('.modal').fadeOut(300);
         }
     });
-    
+    $('.cart-button').on('click', function () {
+        $('#cartPanel').toggleClass('open');
+        cargarCompras(); // Cargar compras al abrir
+    });
+
+    $('.close-cart-panel').on('click', function () {
+        $('#cartPanel').removeClass('open');
+    });
+    $('.tab-button').on('click', function () {
+        const tab = $(this).data('tab');
+        $('.tab-button').removeClass('active');
+        $(this).addClass('active');
+        $('.tab-content').removeClass('active');
+        $(`#${tab}`).addClass('active');
+
+        // Cargar datos según la pestaña seleccionada
+        if (tab === 'compras') {
+            cargarCompras();
+        } else if (tab === 'solicitudes') {
+            cargarSolicitudes();
+        } else if (tab === 'ordenes') {
+            cargarOrdenes();
+        }
+    });
+
+    // Función para cargar compras (pagos)
+    function cargarCompras() {
+        $.ajax({
+            url: 'obtener_compras.php',
+            method: 'GET',
+            success: function (data) {
+                $('#compras-list').html(data);
+            },
+            error: function () {
+                alert('Error al cargar las compras.');
+            }
+        });
+    }
+
+    // Función para cargar solicitudes (preventa)
+    function cargarSolicitudes() {
+        $.ajax({
+            url: 'obtener_solicitudes.php',
+            method: 'GET',
+            success: function (data) {
+                $('#solicitudes-list').html(data);
+            },
+            error: function () {
+                alert('Error al cargar las solicitudes.');
+            }
+        });
+    }
+
+    // Función para cargar órdenes (ordenes)
+    function cargarOrdenes() {
+        $.ajax({
+            url: 'obtener_ordenes.php',
+            method: 'GET',
+            success: function (data) {
+                $('#ordenes-list').html(data);
+            },
+            error: function () {
+                alert('Error al cargar las órdenes.');
+            }
+        });
+    }
+
+    // Cancelar una solicitud
+    $(document).on('click', '.cancelar-solicitud', function () {
+        const idPreventa = $(this).data('id');
+        const fila = $(this).closest('tr'); // Obtener la fila que contiene el botón
+
+        // Mostrar confirmación con SweetAlert2
+        Swal.fire({
+            title: '¿Estás seguro?',
+            text: "¡No podrás revertir esta acción!",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonText: 'Sí, cancelar',
+            cancelButtonText: 'No, volver',
+            customClass: {
+                confirmButton: 'btn btn-danger', // Clase personalizada para el botón de confirmación
+                cancelButton: 'btn btn-secondary' // Clase personalizada para el botón de cancelación
+            }
+        }).then((result) => {
+            if (result.isConfirmed) {
+                // Si el usuario confirma, hacer la solicitud AJAX
+                $.ajax({
+                    url: 'cancelar_solicitud.php',
+                    method: 'POST',
+                    data: { idPreventa: idPreventa },
+                    dataType: 'json', // Asegurarse de que la respuesta sea interpretada como JSON
+                    success: function (response) {
+                        if (response && response.success) {
+                            // Mostrar mensaje de éxito con SweetAlert2
+                            Swal.fire({
+                                icon: 'success',
+                                title: '¡Éxito!',
+                                text: response.message || 'Solicitud cancelada correctamente.',
+                                confirmButtonText: 'Aceptar',
+                                customClass: {
+                                    confirmButton: 'btn btn-success' // Clase personalizada para el botón
+                                }
+                            }).then(() => {
+                                fila.remove(); // Eliminar la fila de la tabla
+                            });
+                        } else {
+                            // Mostrar mensaje de error con SweetAlert2
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Error',
+                                text: response.message || 'Error al cancelar la solicitud.',
+                                confirmButtonText: 'Aceptar',
+                                customClass: {
+                                    confirmButton: 'btn btn-danger' // Clase personalizada para el botón
+                                }
+                            });
+                        }
+                    },
+                    error: function (xhr, status, error) {
+                        // Mostrar mensaje de error de AJAX con SweetAlert2
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Error',
+                            text: 'Error al procesar la solicitud. Por favor, inténtalo de nuevo.',
+                            confirmButtonText: 'Aceptar',
+                            customClass: {
+                                confirmButton: 'btn btn-danger' // Clase personalizada para el botón
+                            }
+                        });
+                    }
+                });
+            }
+        });
+    });
+    $(document).on('click', function (event) {
+    // Si el clic no fue dentro del panel del carrito ni en el botón del carrito
+    if (!$(event.target).closest('#cartPanel').length && !$(event.target).closest('.cart-button').length) {
+        $('#cartPanel').removeClass('open'); // Cerrar el panel
+    }
+});
     $('#menu-semanal-btn').click(function(e) {
         e.preventDefault();
         $.get('menu_semanal.php', function(data) {
@@ -1458,6 +1832,58 @@ $(document).ready(function() {
         }
     });
 
+    $('#crear-orden').on('click', function(event) {
+        event.preventDefault(); // Evita que el enlace recargue la página o haga algo por defecto
+
+        // Cambia el texto de "Crear Orden" a "Guardar Orden"
+        $(this).hide(); // Oculta "Crear Orden"
+        $('#guardar-orden').show(); // Muestra "Guardar Orden"
+        $('#cancelar-orden').show(); // Muestra "Cancelar"
+
+        // Cambia los íconos de los productos
+        $('.add-cart i').each(function() {
+            if ($(this).hasClass('fa-basket-shopping')) {
+                $(this).removeClass('fa-basket-shopping').addClass('fa-plus');
+            }
+        });
+    });
+
+    // Evento de clic para el enlace "Cancelar"
+    $('#cancelar-orden').on('click', function(event) {
+        event.preventDefault(); // Evita que el enlace recargue la página o haga algo por defecto
+
+        // Restaura el estado original
+        $('#crear-orden').show(); // Muestra "Crear Orden"
+        $('#guardar-orden').hide(); // Oculta "Guardar Orden"
+        $(this).hide(); // Oculta "Cancelar"
+
+        // Restaura los íconos de los productos
+        $('.add-cart i').each(function() {
+            if ($(this).hasClass('fa-plus')) {
+                $(this).removeClass('fa-plus').addClass('fa-basket-shopping');
+            }
+        });
+    });
+
+    // Evento de clic para el enlace "Guardar Orden"
+    $('#guardar-orden').on('click', function(event) {
+        event.preventDefault(); // Evita que el enlace recargue la página o haga algo por defecto
+
+        // Aquí puedes agregar la lógica para guardar la orden
+        alert('Orden guardada correctamente.');
+
+        // Restaura el estado original
+        $('#crear-orden').show(); // Muestra "Crear Orden"
+        $('#guardar-orden').hide(); // Oculta "Guardar Orden"
+        $('#cancelar-orden').hide(); // Oculta "Cancelar"
+
+        // Restaura los íconos de los productos
+        $('.add-cart i').each(function() {
+            if ($(this).hasClass('fa-plus')) {
+                $(this).removeClass('fa-plus').addClass('fa-basket-shopping');
+            }
+        });
+    });
     // Cambiar texto del botón según método de pago (desayunos)
     $('#formaPagoEfectivoDesayuno').on('change', function() {
         $('#btnAccionDesayuno').text('Solicitar');
@@ -1961,8 +2387,71 @@ $(document).ready(function() {
                 }
             });
         });
-    });
+    });    
 });
+
+
+// Codigo script para el buscador de productos
+function filtrarProductos() {
+        const input = document.getElementById('searchInput').value.toUpperCase();
+        const productos = document.querySelectorAll('.card-product');
+        const desayunos = document.querySelectorAll('#container-breakfasts .card-product');
+        const almuerzos = document.querySelectorAll('#container-almuerzos .card-product');
+        let resultadosEncontrados = false;
+
+        // Filtrar productos
+        productos.forEach(producto => {
+            const nombre = producto.querySelector('h3').textContent.toUpperCase();
+            if (nombre.startsWith(input)) {
+                producto.style.display = '';
+                resultadosEncontrados = true;
+            } else {
+                producto.style.display = 'none';
+            }
+        });
+
+        // Filtrar desayunos
+        desayunos.forEach(desayuno => {
+            const nombre = desayuno.querySelector('h3').textContent.toUpperCase();
+            if (nombre.startsWith(input)) {
+                desayuno.style.display = '';
+                resultadosEncontrados = true;
+            } else {
+                desayuno.style.display = 'none';
+            }
+        });
+
+        // Filtrar almuerzos
+        almuerzos.forEach(almuerzo => {
+            const nombre = almuerzo.querySelector('h3').textContent.toUpperCase();
+            if (nombre.startsWith(input)) {
+                almuerzo.style.display = '';
+                resultadosEncontrados = true;
+            } else {
+                almuerzo.style.display = 'none';
+            }
+        });
+
+        // Mostrar mensaje si no hay resultados
+        const mensajeNoEncontrado = document.getElementById('mensajeNoEncontrado');
+        if (!resultadosEncontrados && input.length > 0) {
+            if (!mensajeNoEncontrado) {
+                const mensaje = document.createElement('p');
+                mensaje.id = 'mensajeNoEncontrado';
+                mensaje.textContent = 'Producto no encontrado';
+                document.querySelector('.container-products').appendChild(mensaje);
+            }
+        } else {
+            if (mensajeNoEncontrado) {
+                mensajeNoEncontrado.remove();
+            }
+        }
+    }
+
+    function clearSearch() {
+        document.getElementById('searchInput').value = '';
+        filtrarProductos(); // Reaplicar el filtro para mostrar todos los productos
+    }
 </script>
 </body>
 </html>
