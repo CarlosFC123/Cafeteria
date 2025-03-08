@@ -617,6 +617,106 @@ $almuerzos = $pdo->query("
             margin-top: 15px;
         }
         }
+        /* Estilos para el ícono del menú en móviles */
+#mobile-menu-icon {
+    display: none; /* Oculta el ícono por defecto */
+    cursor: pointer;
+    font-size: 24px;
+    color: white;
+}
+
+/* Estilos para el menú en móviles */
+#mobile-menu {
+    display: flex; /* Muestra el menú en pantallas grandes */
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+/* Media query para móviles */
+@media (max-width: 768px) {
+    #mobile-menu-icon {
+        display: block; /* Muestra el ícono en móviles */
+    }
+
+    #mobile-menu {
+        display: none; /* Oculta el menú en móviles por defecto */
+        flex-direction: column;
+        background-color: rgb(100, 100, 100);
+        position: absolute;
+        top: 50px; /* Ajusta según la altura de tu header */
+        left: 0;
+        width: 100%;
+        padding: 10px;
+    }
+
+    #mobile-menu.active {
+        display: flex; /* Muestra el menú cuando tiene la clase "active" */
+    }
+}
+
+/* Navigation button styling improvements */
+.menu li a {
+    color: white;
+    padding: 10px 15px;
+    border-radius: 5px;
+    transition: background-color 0.3s, color 0.3s;
+    display: block;
+    text-decoration: none;
+}
+
+.menu li a:hover {
+    background-color: rgba(255, 255, 255, 0.2);
+}
+
+/* Mobile-specific navigation styling */
+@media (max-width: 768px) {
+    .menu li {
+        width: 100%;
+        margin: 5px 0;
+    }
+    
+    .menu li a {
+        padding: 12px 15px;
+        font-size: 16px;
+        text-align: center;
+        background-color: rgba(255, 255, 255, 0.1);
+    }
+    
+    .menu li a:hover, .menu li a:active {
+        background-color: rgba(255, 255, 255, 0.3);
+    }
+}
+
+@media (max-width: 768px) {
+    #menu-semanal-modal .modal-dialog {
+        width: 95%;
+        max-width: none;
+        margin: 10px auto;
+    }
+    
+    #menu-semanal-modal .modal-content {
+        padding: 10px;
+    }
+    
+    #menu-semanal-modal .modal-header {
+        padding: 10px 15px;
+    }
+    
+    #menu-semanal-modal .modal-body {
+        padding: 10px;
+    }
+    
+    #menu-semanal-cards {
+        flex-direction: column !important;
+        align-items: center;
+    }
+    
+    .menu-card {
+        width: 90% !important;
+        margin: 10px auto !important;
+    }
+}
 </style>
 </head>
 <body>
@@ -682,12 +782,10 @@ $almuerzos = $pdo->query("
         </div>
         <div style="background-color:rgb(100, 100, 100);">
             <nav class="navbar container">
-                <i class="fa-solid fa-bars"></i>
-                <ul class="menu">
-                    <li><a href="#">Inicio</a></li>
+                <i class="fa-solid fa-bars" id="mobile-menu-icon"></i>
+                <ul class="menu" id="mobile-menu">
                     <li><a id="menu-semanal-btn">Menú semanal</a></li>
                 </ul>
-                
             </nav>
         </div>
         <div id="menu-semanal-modal" class="modal fade" tabindex="-1" role="dialog" aria-hidden="true">
@@ -773,8 +871,8 @@ $almuerzos = $pdo->query("
                     <div class="content-card-product">
                         <h3><?php echo htmlspecialchars($producto['nbProducto']); ?></h3>
                         <span class="add-cart" data-type="producto">
-                            <i class="fa-solid fa-basket-shopping"></i>
-                        </span>
+    <i class="material-icons">shopping_cart</i>
+</span>
                         <p class="price">$<?php echo number_format($producto['precioProducto'], 2); ?></p>
                     </div>
                 </div>
@@ -805,7 +903,7 @@ $almuerzos = $pdo->query("
                             <label for="correo">Correo electrónico:</label>
                             <input type="email" id="correo" name="correo" class="form-control">
                         </div>
-                        <!-- Campos de contraseña -->
+                        
                         <div class="form-group">
                             <label for="nuevaContrasena">Nueva contraseña:</label>
                             <input type="password" id="nuevaContrasena" name="nuevaContrasena" class="form-control">
@@ -2452,6 +2550,25 @@ function filtrarProductos() {
         document.getElementById('searchInput').value = '';
         filtrarProductos(); // Reaplicar el filtro para mostrar todos los productos
     }
+
+    document.addEventListener('DOMContentLoaded', function () {
+    // Selecciona el ícono del menú y el menú
+    const mobileMenuIcon = document.getElementById('mobile-menu-icon');
+    const mobileMenu = document.getElementById('mobile-menu');
+
+    // Agrega un evento de clic al ícono
+    mobileMenuIcon.addEventListener('click', function () {
+        // Alterna la clase "active" en el menú
+        mobileMenu.classList.toggle('active');
+    });
+
+    // Cierra el menú si se hace clic fuera de él
+    document.addEventListener('click', function (event) {
+        if (!mobileMenu.contains(event.target) && !mobileMenuIcon.contains(event.target)) {
+            mobileMenu.classList.remove('active');
+        }
+    });
+});
 </script>
 </body>
 </html>
