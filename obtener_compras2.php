@@ -1,21 +1,14 @@
 <?php
+session_start();
+require 'db_connection.php';
+
+// Consulta para obtener todos los datos de la tabla pagos
+$query = "SELECT nombrePagos, canTotalP, fePago, metodoPago, 'Completado' FROM pagos ORDER BY fePago DESC";
+$stmt = $pdo->prepare($query);
+$stmt->execute();
+$compras = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+// Devolver los datos en formato JSON
 header('Content-Type: application/json');
-$servername = "localhost";
-$username = "root";
-$password = "";
-$dbname = "cafeteria";  
-
-try {
-    $pdo = new PDO("mysql:host=$host;dbname=$dbname", $username, $password);
-    $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-
-    $sql = "SELECT nombrePagos, canTotalP, fePago, metodoPago FROM pagos ORDER BY fePago DESC";
-    $stmt = $pdo->prepare($sql);
-    $stmt->execute();
-
-    $compras = $stmt->fetchAll(PDO::FETCH_ASSOC);
-    echo json_encode($compras);
-} catch (PDOException $e) {
-    echo json_encode(['error' => $e->getMessage()]);
-}
+echo json_encode($compras);
 ?>

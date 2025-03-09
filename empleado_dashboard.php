@@ -309,32 +309,45 @@ $almuerzos = $pdo->query("
             font-weight: 500;
         }
         .price-container {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            width: 100%;
-        }
+    display: flex;
+    justify-content: space-between; /* Separa el precio y el botón */
+    align-items: center; /* Centra verticalmente */
+    width: 100%; /* Ocupa todo el ancho disponible */
+    margin-top: 10px; /* Espaciado superior */
+}
+
+.price {
+    font-size: 16px; /* Tamaño del texto del precio */
+    font-weight: bold; /* Texto en negrita */
+    color: #333; /* Color del texto */
+}
         .price-list {
             flex: 1;
             text-align: left;
         }
-        .price {
-            font-size: 14px;
-            margin: 2px 0;
-        }
+        
         .add-cart {
-            color: white;
-            padding: 10px;
-            border-radius: 50%;
+            color: #C7A17A; /* Color del ícono */
+            background-color: transparent; /* Fondo transparente */
+            border: 2px solid #C7A17A; /* Borde del mismo color que el ícono */
+            border-radius: 50%; /* Borde redondeado */
+            padding: 10px; /* Espaciado interno */
             display: flex;
             justify-content: center;
             align-items: center;
-            width: 40px;
-            height: 40px;
-            cursor: pointer;
+            width: 40px; /* Ancho del botón */
+            height: 40px; /* Altura del botón */
+            cursor: pointer; /* Cambia el cursor al pasar sobre el botón */
+            transition: all 0.3s ease; /* Transición suave para efectos */
         }
+
+        .add-cart:hover {
+            background-color: #C7A17A; /* Cambia el fondo al pasar el mouse */
+            color: white; /* Cambia el color del ícono al pasar el mouse */
+        }
+
         .add-cart i {
-            font-size: 18px;
+            font-size: 18px; /* Tamaño del ícono */
         }
 
 
@@ -771,10 +784,7 @@ $almuerzos = $pdo->query("
                                 <!-- Contenido de solicitudes (preventa) -->
                                 <div id="solicitudes-list"></div>
                             </div>
-                            <!-- <div id="ordenes" class="tab-content">
-                                 Contenido de órdenes (ordenes) 
-                                <div id="ordenes-list"></div>
-                            </div> -->
+                            
                         </div>
                     </div>
                 </div>
@@ -870,10 +880,12 @@ $almuerzos = $pdo->query("
                     </div>
                     <div class="content-card-product">
                         <h3><?php echo htmlspecialchars($producto['nbProducto']); ?></h3>
-                        <span class="add-cart" data-type="producto">
-    <i class="material-icons">shopping_cart</i>
-</span>
-                        <p class="price">$<?php echo number_format($producto['precioProducto'], 2); ?></p>
+                        <div class="price-container">
+                            <span class="add-cart" data-type="producto">
+                                <i class="fas fa-basket-shopping"></i>
+                            </span>
+                            <p class="price">$<?php echo number_format($producto['precioProducto'], 2); ?></p>
+                        </div>
                     </div>
                 </div>
                 <?php endforeach; ?>
@@ -932,12 +944,10 @@ $almuerzos = $pdo->query("
                         <div class="content-card-product">
                             <h3><?php echo htmlspecialchars($desayuno['nombreProducto']); ?></h3>
                             <div class="price-container">
-                                <div class="price-list">
-                                    <p class="price">$<?php echo number_format($desayuno['precioDesayuno'], 2); ?></p>
-                                </div>
                                 <span class="add-cart" data-type="desayuno">
-                                    <i class="fa-solid fa-basket-shopping"></i>
+                                    <i class="fas fa-basket-shopping"></i>
                                 </span>
+                                <p class="price">$<?php echo number_format($desayuno['precioDesayuno'], 2); ?></p>
                             </div>
                         </div>
                     </div>
@@ -1930,58 +1940,10 @@ $(document).ready(function() {
         }
     });
 
-    $('#crear-orden').on('click', function(event) {
-        event.preventDefault(); // Evita que el enlace recargue la página o haga algo por defecto
 
-        // Cambia el texto de "Crear Orden" a "Guardar Orden"
-        $(this).hide(); // Oculta "Crear Orden"
-        $('#guardar-orden').show(); // Muestra "Guardar Orden"
-        $('#cancelar-orden').show(); // Muestra "Cancelar"
+   
 
-        // Cambia los íconos de los productos
-        $('.add-cart i').each(function() {
-            if ($(this).hasClass('fa-basket-shopping')) {
-                $(this).removeClass('fa-basket-shopping').addClass('fa-plus');
-            }
-        });
-    });
-
-    // Evento de clic para el enlace "Cancelar"
-    $('#cancelar-orden').on('click', function(event) {
-        event.preventDefault(); // Evita que el enlace recargue la página o haga algo por defecto
-
-        // Restaura el estado original
-        $('#crear-orden').show(); // Muestra "Crear Orden"
-        $('#guardar-orden').hide(); // Oculta "Guardar Orden"
-        $(this).hide(); // Oculta "Cancelar"
-
-        // Restaura los íconos de los productos
-        $('.add-cart i').each(function() {
-            if ($(this).hasClass('fa-plus')) {
-                $(this).removeClass('fa-plus').addClass('fa-basket-shopping');
-            }
-        });
-    });
-
-    // Evento de clic para el enlace "Guardar Orden"
-    $('#guardar-orden').on('click', function(event) {
-        event.preventDefault(); // Evita que el enlace recargue la página o haga algo por defecto
-
-        // Aquí puedes agregar la lógica para guardar la orden
-        alert('Orden guardada correctamente.');
-
-        // Restaura el estado original
-        $('#crear-orden').show(); // Muestra "Crear Orden"
-        $('#guardar-orden').hide(); // Oculta "Guardar Orden"
-        $('#cancelar-orden').hide(); // Oculta "Cancelar"
-
-        // Restaura los íconos de los productos
-        $('.add-cart i').each(function() {
-            if ($(this).hasClass('fa-plus')) {
-                $(this).removeClass('fa-plus').addClass('fa-basket-shopping');
-            }
-        });
-    });
+   
     // Cambiar texto del botón según método de pago (desayunos)
     $('#formaPagoEfectivoDesayuno').on('change', function() {
         $('#btnAccionDesayuno').text('Solicitar');

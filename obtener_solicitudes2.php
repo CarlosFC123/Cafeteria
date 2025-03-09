@@ -1,24 +1,17 @@
 <?php
+session_start();
+require 'db_connection.php';
+
+// Consulta para obtener todas las solicitudes pendientes (estado_pv = 'Pendiente')
+$query = "SELECT idPreventa, nombrePreventa, cantidad_orden, precioUnitarioPreventa, precioTotalpreventa, metodoPago, tipoComida, estado_pv, hora_compra 
+          FROM preventa 
+          WHERE estado_pv = 'Pendiente' 
+          ORDER BY hora_compra DESC";
+$stmt = $pdo->prepare($query);
+$stmt->execute();
+$solicitudes = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+// Devolver los datos en formato JSON
 header('Content-Type: application/json');
-$servername = "localhost";
-$username = "root";
-$password = "";
-$dbname = "cafeteria"; 
-
-try {
-    $pdo = new PDO("mysql:host=$host;dbname=$dbname", $username, $password);
-    $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-
-    $sql = "SELECT idPreventa, nombrePreventa, cantidad_orden, precioUnitarioPreventa, precioTotalpreventa, metodoPago, tipoComida, estado_pv, hora_compra 
-            FROM preventa 
-            WHERE estado_pv = 'Pendiente' 
-            ORDER BY hora_compra DESC";
-    $stmt = $pdo->prepare($sql);
-    $stmt->execute();
-
-    $solicitudes = $stmt->fetchAll(PDO::FETCH_ASSOC);
-    echo json_encode($solicitudes);
-} catch (PDOException $e) {
-    echo json_encode(['error' => $e->getMessage()]);
-}
+echo json_encode($solicitudes);
 ?>
